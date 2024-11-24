@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved Timeline Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .axis line,
+        .axis path {
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .axis text {
+            font-size: 12px;
+        }
+        .timeline-circle {
+            cursor: pointer;
+            fill-opacity: 0.8;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            padding: 5px;
+            font-size: 12px;
+            background: lightgray;
+            border: 1px solid gray;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+        .grid-line {
+            stroke: #e0e0e0;
+            stroke-dasharray: 2 2;
+        }
+        .row-shade {
+            fill: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date">
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date">
+        <button id="filter-btn">Apply Filter</button>
+    </div>
+    <div id="tooltip" class="tooltip" style="opacity: 0;"></div>
+    <svg></svg>
+
+    <script>
+        const margin = { top: 50, right: 20, bottom: 100, left: 150 }; // Adjusted bottom margin for rotated x-axis labels
+        const width = 1200 - margin.left - margin.right; // Increased width for better fit
+
+        const svg = d3.select("svg")
+            .attr("width", width + margin.left + margin.right)
+            .append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+        const tooltip = d3.select("#tooltip");
+        let data = []; // Global data
+
+        d3.csv("PatientInfo.csv").then(rawData => {
+            const parseDate = d3.timeParse("%Y-%m-%d");
+            rawData.forEach(d => {
+                d.symptom_onset_date = parseDate(d.symptom_onset_date);
+                d.confirmed_date = parseDate(d.confirmed_date);
+                d.released_date = parseDate(d.released_date);
+            });
+
+            // Group patients by province
+            const groupedData = d3.group(rawData, d => d.province);
+            data = Array.from(groupedData.entries())
+                .map(([province, patients]) => ({
+                    province,
+                    patients
+                }));
+
+            drawTimeline(data); // Draw the initial timeline
+        });
+
+        function drawTimeline(filteredData) {
+            svg.selectAll("*").remove(); // Clear previous drawings
+
+            const rowHeight = 30; // Reduced row height for tighter spacing
+            const totalHeight = filteredData.length * rowHeight + margin.top + margin.bottom;
+
+            // Adjust SVG height dynamically
+            d3.select("svg").attr("height", totalHeight);
+
+            const xScale = d3.scaleTime()
+                .domain([
+                    d3.min(filteredData.flatMap(d => d.patients), d => d.symptom_onset_date),
+                    d3.max(filteredData.flatMap(d => d.patients), d => d.released_date)
+                ])
+                .range([0, width]);
+
+            const yScale = d3.scaleBand()
+                .domain(filteredData.map(d => d.province))
+                .range([0, totalHeight - margin.top - margin.bottom])
+                .padding(0.1); // Reduced padding for tighter spacing
+
+            const xAxis = d3.axisBottom(xScale)
+                .tickFormat(d3.timeFormat("%b %d"))
+                .ticks(d3.timeMonth.every(1)) // Add ticks for every month
+                .tickPadding(10); // Padding between tick marks and labels
+
+            const yAxis = d3.axisLeft(yScale);
+
+            svg.append("g")
+                .attr("transform", `translate(0, ${totalHeight - margin.top - margin.bottom})`)
+                .call(xAxis)
+                .selectAll("text")
+                .attr("text-anchor", "end") // Rotate labels for better fit
+                .attr("transform", "rotate(-45)") // Rotate labels
+                .style("font-size", "12px");
+
+            svg.append("g")
+                .call(yAxis)
+                .selectAll("text")
+                .style("font-size", "12px");
+
+            // Add horizontal grid lines for clarity
+            svg.selectAll(".grid-line")
+                .data(yScale.domain())
+                .enter()
+                .append("line")
+                .attr("class", "grid-line")
+                .attr("x1", 0)
+                .attr("x2", width)
+                .attr("y1", d => yScale(d) + yScale.bandwidth() / 2)
+                .attr("y2", d => yScale(d) + yScale.bandwidth() / 2);
+
+            // Draw province blocks
+            filteredData.forEach((group, index) => {
+                const y = yScale(group.province) + yScale.bandwidth() / 2;
+
+                // Add timeline lines for each patient
+                group.patients.forEach(d => {
+                    svg.append("line")
+                        .attr("x1", xScale(d.symptom_onset_date))
+                        .attr("x2", xScale(d.released_date))
+                        .attr("y1", y)
+                        .attr("y2", y)
+                        .attr("stroke", "gray")
+                        .attr("stroke-width", 1);
+
+                    // Add circles for events
+                    const eventColors = { symptom_onset_date: "red", confirmed_date: "orange", released_date: "green" };
+                    ["symptom_onset_date", "confirmed_date", "released_date"].forEach(event => {
+                        svg.append("circle")
+                            .attr("cx", xScale(d[event]))
+                            .attr("cy", y)
+                            .attr("r", 3) // Smaller circle size
+                            .attr("fill", eventColors[event])
+                            .on("mouseover", (event, d) => {
+                                tooltip.transition().duration(200).style("opacity", 0.9);
+                                tooltip.html(`
+                                    <strong>Province:</strong> ${group.province}<br>
+                                    <strong>${event.replace(/_/g, " ").toUpperCase()}:</strong> ${d3.timeFormat("%Y-%m-%d")(d[event])}
+                                `)
+                                    .style("left", `${event.pageX + 10}px`)
+                                    .style("top", `${event.pageY + 10}px`);
+                            })
+                            .on("mouseout", () => tooltip.transition().duration(200).style("opacity", 0));
+                    });
+                });
+            });
+        }
+
+        document.getElementById("filter-btn").addEventListener("click", () => {
+            const startDateInput = document.getElementById("start-date").value;
+            const endDateInput = document.getElementById("end-date").value;
+
+            if (!startDateInput || !endDateInput) {
+                alert("Please select both start and end dates.");
+                return;
+            }
+
+            const parseDate = d3.timeParse("%Y-%m-%d");
+            const startDate = parseDate(startDateInput);
+            const endDate = parseDate(endDateInput);
+
+            const filteredData = data.map(group => ({
+                province: group.province,
+                patients: group.patients.filter(d =>
+                    d.symptom_onset_date >= startDate && d.released_date <= endDate
+                )
+            })).filter(group => group.patients.length > 0);
+
+            drawTimeline(filteredData);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force-Directed Graph with Custom Colors</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            background-color: #1e1e1e; 
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        .graph {
+            display: block;
+            margin: auto;
+            border: 1px solid #333;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            padding: 5px;
+            font-size: 12px;
+            background: lightgray;
+            border: 1px solid gray;
+            border-radius: 3px;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .legend {
+            font-size: 12px;
+            fill: white;
+        }
+        .legend-rect {
+            stroke: #333;
+            stroke-width: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div id="tooltip" class="tooltip"></div>
+    <svg class="graph" width="1200" height="800"></svg>
+
+    <script>
+        const width = 1200;
+        const height = 800;
+
+        const svg = d3.select(".graph");
+        const tooltip = d3.select("#tooltip");
+
+        d3.csv("PatientInfo.csv").then(data => {
+            const colorMap = {
+                "overseas inflow": "#1f77b4", 
+                "Seoul": "#ff7f0e",         
+                "contact with patient": "#2ca02c",
+                "Seongdong-gu APT": "#d62728",    
+                "etc": "#9467bd",                  
+                "Eunpyeong St. Mary's Hospital": "#8c564b", 
+                "Shincheonji Church": "#e377c2",  
+                "Dongan Church": "#7f7f7f",       
+                "Guro-gu Call Center": "#bcbd22", 
+                "Itaewon Clubs": "#17becf"       
+            };
+
+            const defaultNodeColor = "purple"; 
+            const relationshipColor = "#fdae61"; 
+
+            const nodes = Array.from(new Set(data.flatMap(d => [d.infection_case, d.province])))
+                .filter(d => d !== "") 
+                .map(name => ({
+                    name,
+                    color: colorMap[name] || defaultNodeColor
+                }));
+
+            const links = data
+                .filter(d => d.infection_case && d.province) 
+                .map(d => ({
+                    source: d.infection_case,
+                    target: d.province,
+                    type: "relationship" 
+                }));
+
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.name).distance(100)) 
+                .force("charge", d3.forceManyBody().strength(-50)) 
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide(15)) 
+                .on("tick", ticked);
+
+            const link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(links)
+                .enter()
+                .append("line")
+                .attr("stroke-width", 1.5)
+                .attr("stroke", relationshipColor);
+
+            // Draw nodes
+            const node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(nodes)
+                .enter()
+                .append("circle")
+                .attr("r", 8)
+                .attr("fill", d => d.color) 
+                .attr("stroke", "#333")
+                .attr("stroke-width", 0.5)
+                .call(drag(simulation)) 
+                .on("mouseover", (event, d) => {
+                    tooltip.transition().duration(200).style("opacity", 0.9);
+                    tooltip.html(`<strong>Node:</strong> ${d.name}`)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY + 10}px`);
+                })
+                .on("mouseout", () => tooltip.transition().duration(200).style("opacity", 0));
+
+            // Draw the legend
+            const legend = svg.append("g")
+                .attr("class", "legend")
+                .attr("transform", `translate(${width - 200}, 20)`); 
+
+            legend.append("text")
+                .attr("x", 0)
+                .attr("y", -10) 
+                .text("Infection Causes")
+                .style("fill", "white")
+                .style("font-size", "14px")
+                .style("font-weight", "bold");
+
+            // Legend for nodes
+            const legendData = Object.keys(colorMap).map(key => ({
+                label: key,
+                color: colorMap[key]
+            }));
+
+            legend.selectAll("rect")
+                .data(legendData)
+                .enter()
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", (d, i) => i * 20) 
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => d.color)
+                .attr("class", "legend-rect");
+
+            legend.selectAll("text")
+                .data(legendData)
+                .enter()
+                .append("text")
+                .attr("x", 24) 
+                .attr("y", (d, i) => i * 20 + 14) 
+                .text(d => d.label)
+                .style("fill", "white");
+
+            legend.append("rect")
+                .attr("x", 0)
+                .attr("y", legendData.length * 20)
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", relationshipColor);
+
+            legend.append("text")
+                .attr("x", 24)
+                .attr("y", legendData.length * 20 + 14)
+                .text("Relationships (Provinces)")
+                .style("fill", "white")
+                .style("font-style", "italic");
+
+
+            function ticked() {
+                link
+                    .attr("x1", d => Math.max(0, Math.min(width, d.source.x)))
+                    .attr("y1", d => Math.max(0, Math.min(height, d.source.y)))
+                    .attr("x2", d => Math.max(0, Math.min(width, d.target.x)))
+                    .attr("y2", d => Math.max(0, Math.min(height, d.target.y)));
+
+                node
+                    .attr("cx", d => d.x = Math.max(0, Math.min(width, d.x)))
+                    .attr("cy", d => d.y = Math.max(0, Math.min(height, d.y)));
+            }
+
+            function drag(simulation) {
+                return d3.drag()
+                    .on("start", (event, d) => {
+                        if (!event.active) simulation.alphaTarget(0.3).restart();
+                        d.fx = d.x;
+                        d.fy = d.y;
+                    })
+                    .on("drag", (event, d) => {
+                        d.fx = event.x;
+                        d.fy = event.y;
+                    })
+                    .on("end", (event, d) => {
+                        if (!event.active) simulation.alphaTarget(0);
+                        d.fx = null;
+                        d.fy = null;
+                    });
+            }
+        }).catch(error => console.error("Error loading data:", error));
+    </script>
+</body>
+</html>

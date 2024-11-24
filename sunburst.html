@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styled Sunburst Chart with Scroll</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        svg {
+            font-size: 8px;
+            margin-bottom: 20px;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            padding: 5px;
+            font-size: 10px;
+            background: lightgray;
+            border: 1px solid gray;
+            border-radius: 3px;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .legend {
+            font-size: 10px;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            max-height: 300px; 
+            overflow-y: auto; 
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tooltip" id="tooltip"></div>
+        <svg width="900" height="900"></svg>
+        <div class="legend" id="legend"></div>
+    </div>
+    <script>
+        const width = 900;
+        const radius = width / 2;
+        const colorScheme = [
+            "#9b59b6", "#8e44ad", "#d980fa", "#6c5ce7", "#74b9ff", 
+            "#00cec9", "#fab1a0", "#fdcb6e", "#e17055", "#00b894"
+        ];
+        const color = d3.scaleOrdinal(colorScheme);
+
+        const svg = d3.select("svg")
+            .attr("viewBox", [-radius, -radius, width, width]);
+
+        const tooltip = d3.select("#tooltip");
+
+        function buildHierarchy(data) {
+            const root = { name: "Root", children: [] };
+
+            data.forEach(d => {
+                if (d.infection_case && d.infection_case !== "Unknown") {
+                    let province = root.children.find(p => p.name === d.province);
+                    if (!province) {
+                        province = { name: d.province, children: [] };
+                        root.children.push(province);
+                    }
+
+                    let city = province.children.find(c => c.name === d.city);
+                    if (!city) {
+                        city = { name: d.city, children: [] };
+                        province.children.push(city);
+                    }
+
+                    let caseType = city.children.find(i => i.name === d.infection_case);
+                    if (!caseType) {
+                        caseType = { name: d.infection_case, value: 1 };
+                        city.children.push(caseType);
+                    }
+                }
+            });
+
+            return root;
+        }
+
+        d3.csv("PatientInfo.csv").then(data => {
+            const hierarchy = d3.hierarchy(buildHierarchy(data))
+                .sum(d => d.value);
+
+            const partition = d3.partition().size([2 * Math.PI, radius]);
+
+            const root = partition(hierarchy);
+
+            const arc = d3.arc()
+                .startAngle(d => d.x0)
+                .endAngle(d => d.x1)
+                .innerRadius(d => d.y0)
+                .outerRadius(d => d.y1);
+
+            svg.selectAll("path")
+                .data(root.descendants())
+                .enter().append("path")
+                .attr("fill", d => color((d.children ? d : d.parent).data.name))
+                .attr("d", arc)
+                .on("mouseover", (event, d) => {
+                    tooltip.style("opacity", 0.9)
+                        .html(`<strong>${d.data.name}</strong><br>Value: ${d.value || 0}`)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY + 10}px`);
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+
+            svg.selectAll("text")
+                .data(root.descendants().filter(d => d.x1 - d.x0 > 0.03))
+                .enter().append("text")
+                .attr("transform", d => `
+                    rotate(${(d.x0 + d.x1) / 2 * 180 / Math.PI - 90})
+                    translate(${(d.y0 + d.y1) / 2},0)
+                    rotate(${d.x1 - d.x0 > Math.PI ? 180 : 0})
+                `)
+                .attr("text-anchor", "middle")
+                .text(d => d.data.name)
+                .attr("font-size", "8px")
+                .attr("fill", "white");
+
+            const legendData = root.descendants().filter(d => d.depth === 1).map(d => d.data.name);
+
+            const legend = d3.select("#legend");
+            legendData.forEach((name, i) => {
+                const legendItem = legend.append("div").attr("class", "legend-item");
+                legendItem.append("div")
+                    .attr("class", "legend-color")
+                    .style("background-color", color(name));
+                legendItem.append("span").text(name);
+            });
+        }).catch(error => console.error(error));
+    </script>
+</body>
+</html>

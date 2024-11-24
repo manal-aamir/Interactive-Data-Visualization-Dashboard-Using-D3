@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hierarchical Tree Map with Colors</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            background-color: #1e1e1e;
+            color: white;
+        }
+        .treemap-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        .treemap {
+            margin: 20px;
+        }
+        .legend {
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            font-size: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            padding: 5px;
+            font-size: 12px;
+            background: lightgray;
+            border: 1px solid gray;
+            border-radius: 3px;
+            pointer-events: none;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="treemap-container">
+        <div class="treemap">
+            <h4 style="color: white;">Treemap</h4>
+            <svg id="treemap-svg"></svg>
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+        <div class="legend" id="legend">
+            <h5 style="color: white;">Legend</h5>
+        </div>
+    </div>
+    <script>
+        const width = 960;
+        const height = 800; 
+
+        const svg = d3.select("#treemap-svg")
+            .attr("width", width);
+
+        const tooltip = d3.select("#tooltip");
+
+        function buildHierarchy(data) {
+            const root = { name: "Root", children: [] };
+
+            data.forEach(d => {
+                let country = root.children.find(c => c.name === d.country);
+                if (!country) {
+                    country = { name: d.country, children: [] };
+                    root.children.push(country);
+                }
+
+                let province = country.children.find(p => p.name === d.province);
+                if (!province) {
+                    province = { name: d.province, children: [] };
+                    country.children.push(province);
+                }
+
+                let city = province.children.find(c => c.name === d.city);
+                if (!city) {
+                    city = { name: d.city, children: [] };
+                    province.children.push(city);
+                }
+
+                let infectionCase = city.children.find(i => i.name === d.infection_case);
+                if (!infectionCase) {
+                    infectionCase = { name: d.infection_case, value: +d.contact_number || 1 };
+                    city.children.push(infectionCase);
+                }
+            });
+
+            return root;
+        }
+
+        d3.csv("PatientInfo.csv").then(data => {
+            const hierarchy = d3.hierarchy(buildHierarchy(data))
+                .sum(d => d.value)
+                .sort((a, b) => b.value - a.value);
+
+            const treemapLayout = d3.treemap()
+                .size([width, height])
+                .padding(1);
+
+            treemapLayout(hierarchy);
+
+            const colorScale = d3.scaleOrdinal()
+                .range([
+                    "#98abc5", "#8a89a6", "#7b6888", "#6b486b",
+                    "#a05d56", "#d0743c", "#ff8c00", "#a4c639",
+                    "#c94c4c", "#ffa07a", "#20b2aa", "#4682b4"
+                ]);
+
+            const nodes = svg.selectAll("g")
+                .data(hierarchy.descendants())
+                .enter()
+                .append("g")
+                .attr("transform", d => `translate(${d.x0}, ${d.y0})`);
+
+            nodes.append("rect")
+                .attr("width", d => d.x1 - d.x0)
+                .attr("height", d => d.y1 - d.y0)
+                .attr("fill", d => colorScale(d.data.name))
+                .attr("stroke", "#fff")
+                .on("mouseover", (event, d) => {
+                    tooltip.transition().duration(200).style("opacity", 0.9);
+                    tooltip.html(`
+                        <strong>${d.data.name}</strong><br>
+                        Value: ${d.value || 0}
+                    `)
+                    .style("left", `${event.pageX + 10}px`)
+                    .style("top", `${event.pageY + 10}px`);
+                })
+                .on("mouseout", () => tooltip.transition().duration(200).style("opacity", 0));
+
+            nodes.append("text")
+                .attr("dx", 4)
+                .attr("dy", 14)
+                .text(d => d.data.name)
+                .attr("font-size", d => Math.min(12, (d.x1 - d.x0) / d.data.name.length * 2)) 
+                .attr("fill", "white")
+                .attr("opacity", d => (d.x1 - d.x0 > 50 && d.y1 - d.y0 > 20) ? 1 : 0);
+
+            const totalHeight = hierarchy.height * 200; 
+            svg.attr("height", totalHeight);
+
+            const legendItems = [...new Set(hierarchy.leaves().map(d => d.data.name))]; 
+            legendItems.forEach((name, i) => {
+                const legendItem = d3.select("#legend").append("div").attr("class", "legend-item");
+                legendItem.append("div")
+                    .attr("class", "legend-color")
+                    .style("background-color", colorScale(name));
+                legendItem.append("span").text(name);
+            });
+        }).catch(error => console.error(error));
+    </script>
+</body>
+</html>
