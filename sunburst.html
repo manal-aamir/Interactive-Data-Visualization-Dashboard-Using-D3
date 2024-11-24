@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Styled Sunburst Chart with Scroll</title>
+    <title>Enhanced Sunburst Chart with Filtering</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
@@ -13,11 +13,10 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
             height: 100vh;
-            overflow-y: auto; 
-            overflow-x: hidden;
+            overflow-y: auto;
         }
         .container {
             display: flex;
@@ -45,8 +44,8 @@
             margin: 10px;
             display: flex;
             flex-direction: column;
-            max-height: 300px; 
-            overflow-y: auto; 
+            max-height: 300px;
+            overflow-y: auto;
         }
         .legend-item {
             display: flex;
@@ -59,9 +58,36 @@
             margin-right: 5px;
             border: 1px solid #ccc;
         }
+        .controls {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        button, select {
+            padding: 5px 10px;
+            background-color: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover, select:hover {
+            background-color: #777;
+        }
+        select {
+            color: black;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
+    <div class="controls">
+        <button id="reset-btn">Reset Zoom</button>
+        <button id="export-btn">Export as SVG</button>
+        <label for="filter-select">Filter by Province:</label>
+        <select id="filter-select">
+            <option value="all">All</option>
+        </select>
+    </div>
     <div class="container">
         <div class="tooltip" id="tooltip"></div>
         <svg width="900" height="900"></svg>
@@ -71,15 +97,18 @@
         const width = 900;
         const radius = width / 2;
         const colorScheme = [
-            "#9b59b6", "#8e44ad", "#d980fa", "#6c5ce7", "#74b9ff", 
+            "#9b59b6", "#8e44ad", "#d980fa", "#6c5ce7", "#74b9ff",
             "#00cec9", "#fab1a0", "#fdcb6e", "#e17055", "#00b894"
         ];
         const color = d3.scaleOrdinal(colorScheme);
 
         const svg = d3.select("svg")
-            .attr("viewBox", [-radius, -radius, width, width]);
+            .attr("viewBox", [-radius, -radius, width, width])
+            .append("g");
 
         const tooltip = d3.select("#tooltip");
+        const filterSelect = d3.select("#filter-select");
+        let rootData;
 
         function buildHierarchy(data) {
             const root = { name: "Root", children: [] };
@@ -110,8 +139,30 @@
         }
 
         d3.csv("PatientInfo.csv").then(data => {
-            const hierarchy = d3.hierarchy(buildHierarchy(data))
+            rootData = d3.hierarchy(buildHierarchy(data))
                 .sum(d => d.value);
+
+            const uniqueProvinces = Array.from(new Set(data.map(d => d.province))).filter(Boolean);
+            uniqueProvinces.forEach(province => {
+                filterSelect.append("option").text(province).attr("value", province);
+            });
+
+            drawSunburst(rootData);
+
+            filterSelect.on("change", () => {
+                const selectedProvince = filterSelect.node().value;
+                if (selectedProvince === "all") {
+                    drawSunburst(rootData);
+                } else {
+                    const filteredRoot = rootData.copy();
+                    filteredRoot.children = filteredRoot.children.filter(d => d.data.name === selectedProvince);
+                    drawSunburst(filteredRoot);
+                }
+            });
+        });
+
+        function drawSunburst(hierarchy) {
+            svg.selectAll("*").remove();
 
             const partition = d3.partition().size([2 * Math.PI, radius]);
 
@@ -123,7 +174,7 @@
                 .innerRadius(d => d.y0)
                 .outerRadius(d => d.y1);
 
-            svg.selectAll("path")
+            const path = svg.selectAll("path")
                 .data(root.descendants())
                 .enter().append("path")
                 .attr("fill", d => color((d.children ? d : d.parent).data.name))
@@ -134,7 +185,8 @@
                         .style("left", `${event.pageX + 10}px`)
                         .style("top", `${event.pageY + 10}px`);
                 })
-                .on("mouseout", () => tooltip.style("opacity", 0));
+                .on("mouseout", () => tooltip.style("opacity", 0))
+                .on("click", (event, d) => zoomToNode(d));
 
             svg.selectAll("text")
                 .data(root.descendants().filter(d => d.x1 - d.x0 > 0.03))
@@ -149,17 +201,28 @@
                 .attr("font-size", "8px")
                 .attr("fill", "white");
 
-            const legendData = root.descendants().filter(d => d.depth === 1).map(d => d.data.name);
-
-            const legend = d3.select("#legend");
-            legendData.forEach((name, i) => {
-                const legendItem = legend.append("div").attr("class", "legend-item");
-                legendItem.append("div")
-                    .attr("class", "legend-color")
-                    .style("background-color", color(name));
-                legendItem.append("span").text(name);
+            d3.select("#reset-btn").on("click", () => {
+                svg.transition().duration(750).attr("transform", "translate(0,0) scale(1)");
             });
-        }).catch(error => console.error(error));
+
+            d3.select("#export-btn").on("click", () => {
+                const svgData = new XMLSerializer().serializeToString(document.querySelector("svg"));
+                const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "sunburst_chart.svg";
+                link.click();
+            });
+        }
+
+        function zoomToNode(node) {
+            const scale = radius / (node.y1 - node.y0);
+            const translateX = -(node.x0 + (node.x1 - node.x0) / 2) * scale;
+            const translateY = -node.y0 * scale;
+
+            svg.transition().duration(750).attr("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
+        }
     </script>
 </body>
 </html>

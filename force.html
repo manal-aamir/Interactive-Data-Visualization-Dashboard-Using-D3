@@ -3,17 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Force-Directed Graph with Custom Colors</title>
+    <title>Force-Directed Graph with Zoom and Reset</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
-            background-color: #1e1e1e; 
+            background-color: #1e1e1e;
             color: #ffffff;
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .controls {
+            margin: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .graph-container {
+            position: relative;
         }
         .graph {
-            display: block;
-            margin: auto;
             border: 1px solid #333;
         }
         .tooltip {
@@ -30,64 +41,104 @@
         .legend {
             font-size: 12px;
             fill: white;
+            margin-top: 10px;
         }
-        .legend-rect {
-            stroke: #333;
-            stroke-width: 0.5;
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #777;
         }
     </style>
 </head>
 <body>
-    <div id="tooltip" class="tooltip"></div>
-    <svg class="graph" width="1200" height="800"></svg>
+    <div class="controls">
+        <label for="filter">Filter:</label>
+        <select id="filter">
+            <option value="all">All</option>
+        </select>
+        <button id="reset-zoom">Reset Zoom</button>
+        <button id="export">Export as Image</button>
+    </div>
+    <div class="graph-container">
+        <div id="tooltip" class="tooltip"></div>
+        <svg class="graph" width="1200" height="800"></svg>
+    </div>
+    <div class="legend" id="legend"></div>
 
     <script>
         const width = 1200;
         const height = 800;
 
-        const svg = d3.select(".graph");
+        const zoom = d3.zoom()
+            .scaleExtent([1, 10]) 
+            .on("zoom", (event) => {
+                svgGroup.attr("transform", event.transform); 
+            });
+
+        const svg = d3.select(".graph")
+            .call(zoom) // Enables zoom on the SVG
+            .append("g");
+
         const tooltip = d3.select("#tooltip");
 
         d3.csv("PatientInfo.csv").then(data => {
             const colorMap = {
-                "overseas inflow": "#1f77b4", 
-                "Seoul": "#ff7f0e",         
+                "overseas inflow": "#1f77b4",
+                "Seoul": "#ff7f0e",
                 "contact with patient": "#2ca02c",
-                "Seongdong-gu APT": "#d62728",    
-                "etc": "#9467bd",                  
-                "Eunpyeong St. Mary's Hospital": "#8c564b", 
-                "Shincheonji Church": "#e377c2",  
-                "Dongan Church": "#7f7f7f",       
-                "Guro-gu Call Center": "#bcbd22", 
-                "Itaewon Clubs": "#17becf"       
+                "Seongdong-gu APT": "#d62728",
+                "etc": "#9467bd",
+                "Eunpyeong St. Mary's Hospital": "#8c564b",
+                "Shincheonji Church": "#e377c2",
+                "Dongan Church": "#7f7f7f",
+                "Guro-gu Call Center": "#bcbd22",
+                "Itaewon Clubs": "#17becf"
             };
 
-            const defaultNodeColor = "purple"; 
-            const relationshipColor = "#fdae61"; 
+            const defaultNodeColor = "purple";
+            const relationshipColor = "#fdae61";
 
             const nodes = Array.from(new Set(data.flatMap(d => [d.infection_case, d.province])))
-                .filter(d => d !== "") 
+                .filter(d => d !== "")
                 .map(name => ({
                     name,
                     color: colorMap[name] || defaultNodeColor
                 }));
 
             const links = data
-                .filter(d => d.infection_case && d.province) 
+                .filter(d => d.infection_case && d.province)
                 .map(d => ({
                     source: d.infection_case,
                     target: d.province,
-                    type: "relationship" 
+                    type: "relationship"
                 }));
 
             const simulation = d3.forceSimulation(nodes)
-                .force("link", d3.forceLink(links).id(d => d.name).distance(100)) 
-                .force("charge", d3.forceManyBody().strength(-50)) 
+                .force("link", d3.forceLink(links).id(d => d.name).distance(100))
+                .force("charge", d3.forceManyBody().strength(-50))
                 .force("center", d3.forceCenter(width / 2, height / 2))
-                .force("collision", d3.forceCollide(15)) 
+                .force("collision", d3.forceCollide(15))
                 .on("tick", ticked);
 
-            const link = svg.append("g")
+            const svgGroup = svg.append("g");
+
+            const link = svgGroup.append("g")
                 .attr("class", "links")
                 .selectAll("line")
                 .data(links)
@@ -96,90 +147,36 @@
                 .attr("stroke-width", 1.5)
                 .attr("stroke", relationshipColor);
 
-            // Draw nodes
-            const node = svg.append("g")
+            const node = svgGroup.append("g")
                 .attr("class", "nodes")
                 .selectAll("circle")
                 .data(nodes)
                 .enter()
                 .append("circle")
                 .attr("r", 8)
-                .attr("fill", d => d.color) 
+                .attr("fill", d => d.color)
                 .attr("stroke", "#333")
                 .attr("stroke-width", 0.5)
-                .call(drag(simulation)) 
+                .call(drag(simulation))
                 .on("mouseover", (event, d) => {
                     tooltip.transition().duration(200).style("opacity", 0.9);
                     tooltip.html(`<strong>Node:</strong> ${d.name}`)
                         .style("left", `${event.pageX + 10}px`)
                         .style("top", `${event.pageY + 10}px`);
                 })
-                .on("mouseout", () => tooltip.transition().duration(200).style("opacity", 0));
-
-            // Draw the legend
-            const legend = svg.append("g")
-                .attr("class", "legend")
-                .attr("transform", `translate(${width - 200}, 20)`); 
-
-            legend.append("text")
-                .attr("x", 0)
-                .attr("y", -10) 
-                .text("Infection Causes")
-                .style("fill", "white")
-                .style("font-size", "14px")
-                .style("font-weight", "bold");
-
-            // Legend for nodes
-            const legendData = Object.keys(colorMap).map(key => ({
-                label: key,
-                color: colorMap[key]
-            }));
-
-            legend.selectAll("rect")
-                .data(legendData)
-                .enter()
-                .append("rect")
-                .attr("x", 0)
-                .attr("y", (d, i) => i * 20) 
-                .attr("width", 18)
-                .attr("height", 18)
-                .attr("fill", d => d.color)
-                .attr("class", "legend-rect");
-
-            legend.selectAll("text")
-                .data(legendData)
-                .enter()
-                .append("text")
-                .attr("x", 24) 
-                .attr("y", (d, i) => i * 20 + 14) 
-                .text(d => d.label)
-                .style("fill", "white");
-
-            legend.append("rect")
-                .attr("x", 0)
-                .attr("y", legendData.length * 20)
-                .attr("width", 18)
-                .attr("height", 18)
-                .attr("fill", relationshipColor);
-
-            legend.append("text")
-                .attr("x", 24)
-                .attr("y", legendData.length * 20 + 14)
-                .text("Relationships (Provinces)")
-                .style("fill", "white")
-                .style("font-style", "italic");
-
+                .on("mouseout", () => tooltip.transition().duration(200).style("opacity", 0))
+                .on("click", (event, d) => alert(`Clicked on node: ${d.name}`));
 
             function ticked() {
                 link
-                    .attr("x1", d => Math.max(0, Math.min(width, d.source.x)))
-                    .attr("y1", d => Math.max(0, Math.min(height, d.source.y)))
-                    .attr("x2", d => Math.max(0, Math.min(width, d.target.x)))
-                    .attr("y2", d => Math.max(0, Math.min(height, d.target.y)));
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
 
                 node
-                    .attr("cx", d => d.x = Math.max(0, Math.min(width, d.x)))
-                    .attr("cy", d => d.y = Math.max(0, Math.min(height, d.y)));
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
             }
 
             function drag(simulation) {
@@ -199,6 +196,51 @@
                         d.fy = null;
                     });
             }
+
+            d3.select("#reset-zoom").on("click", () => {
+                svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity); 
+            });
+
+            d3.select("#export").on("click", () => {
+                const svgData = new XMLSerializer().serializeToString(document.querySelector("svg"));
+                const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "graph.svg";
+                link.click();
+            });
+
+            const legendData = Object.keys(colorMap).map(key => ({
+                label: key,
+                color: colorMap[key]
+            }));
+
+            const legend = d3.select("#legend");
+            legendData.forEach(item => {
+                const legendItem = legend.append("div").attr("class", "legend-item");
+                legendItem.append("div")
+                    .attr("class", "legend-color")
+                    .style("background-color", item.color);
+                legendItem.append("span").text(item.label);
+            });
+
+            // Filter
+            const filterSelect = d3.select("#filter");
+            legendData.forEach(item => {
+                filterSelect.append("option").attr("value", item.label).text(item.label);
+            });
+
+            filterSelect.on("change", () => {
+                const value = filterSelect.node().value;
+                if (value === "all") {
+                    node.style("opacity", 1);
+                    link.style("opacity", 1);
+                } else {
+                    node.style("opacity", d => (d.name === value ? 1 : 0.2));
+                    link.style("opacity", d => (d.source.name === value || d.target.name === value ? 1 : 0.2));
+                }
+            });
         }).catch(error => console.error("Error loading data:", error));
     </script>
 </body>

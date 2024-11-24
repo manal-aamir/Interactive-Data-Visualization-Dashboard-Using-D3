@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hierarchical Tree Map with Colors</title>
+    <title>Treemap with Proper Text Management</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
             background-color: #1e1e1e;
             color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .controls {
+            margin: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .treemap-container {
             display: flex;
-            flex-direction: row;
             align-items: flex-start;
         }
         .treemap {
@@ -49,57 +57,71 @@
             pointer-events: none;
             opacity: 0;
         }
+        button {
+            padding: 5px 10px;
+            background-color: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #777;
+        }
     </style>
 </head>
 <body>
+    <div class="controls">
+        <label for="filter-type">Filter by Type:</label>
+        <select id="filter-type">
+            <option value="all">All</option>
+        </select>
+        <button id="reset-zoom">Reset Zoom</button>
+    </div>
     <div class="treemap-container">
         <div class="treemap">
-            <h4 style="color: white;">Treemap</h4>
-            <svg id="treemap-svg"></svg>
+            <h4>Treemap</h4>
+            <svg id="treemap-svg" width="960" height="800"></svg>
             <div class="tooltip" id="tooltip"></div>
         </div>
         <div class="legend" id="legend">
-            <h5 style="color: white;">Legend</h5>
+            <h5>Legend</h5>
         </div>
     </div>
     <script>
         const width = 960;
-        const height = 800; 
+        const height = 800;
+        const colorScheme = [
+            "#9b59b6", "#8e44ad", "#d980fa", "#6c5ce7", 
+            "#74b9ff", "#00cec9", "#fab1a0", "#fdcb6e", 
+            "#e17055", "#00b894"
+        ];
+        const colorScale = d3.scaleOrdinal(colorScheme);
 
         const svg = d3.select("#treemap-svg")
-            .attr("width", width);
+            .attr("viewBox", [0, 0, width, height])
+            .append("g");
 
         const tooltip = d3.select("#tooltip");
 
         function buildHierarchy(data) {
             const root = { name: "Root", children: [] };
-
             data.forEach(d => {
                 let country = root.children.find(c => c.name === d.country);
                 if (!country) {
                     country = { name: d.country, children: [] };
                     root.children.push(country);
                 }
-
                 let province = country.children.find(p => p.name === d.province);
                 if (!province) {
                     province = { name: d.province, children: [] };
                     country.children.push(province);
                 }
-
-                let city = province.children.find(c => c.name === d.city);
-                if (!city) {
-                    city = { name: d.city, children: [] };
-                    province.children.push(city);
-                }
-
-                let infectionCase = city.children.find(i => i.name === d.infection_case);
+                let infectionCase = province.children.find(i => i.name === d.infection_case);
                 if (!infectionCase) {
                     infectionCase = { name: d.infection_case, value: +d.contact_number || 1 };
-                    city.children.push(infectionCase);
+                    province.children.push(infectionCase);
                 }
             });
-
             return root;
         }
 
@@ -114,53 +136,73 @@
 
             treemapLayout(hierarchy);
 
-            const colorScale = d3.scaleOrdinal()
-                .range([
-                    "#98abc5", "#8a89a6", "#7b6888", "#6b486b",
-                    "#a05d56", "#d0743c", "#ff8c00", "#a4c639",
-                    "#c94c4c", "#ffa07a", "#20b2aa", "#4682b4"
-                ]);
-
             const nodes = svg.selectAll("g")
                 .data(hierarchy.descendants())
                 .enter()
                 .append("g")
                 .attr("transform", d => `translate(${d.x0}, ${d.y0})`);
 
-            nodes.append("rect")
+            const rects = nodes.append("rect")
                 .attr("width", d => d.x1 - d.x0)
                 .attr("height", d => d.y1 - d.y0)
                 .attr("fill", d => colorScale(d.data.name))
                 .attr("stroke", "#fff")
                 .on("mouseover", (event, d) => {
-                    tooltip.transition().duration(200).style("opacity", 0.9);
-                    tooltip.html(`
-                        <strong>${d.data.name}</strong><br>
-                        Value: ${d.value || 0}
-                    `)
-                    .style("left", `${event.pageX + 10}px`)
-                    .style("top", `${event.pageY + 10}px`);
+                    tooltip.style("opacity", 1)
+                        .html(`<strong>${d.data.name}</strong><br>Value: ${d.value || 0}`)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY + 10}px`);
                 })
-                .on("mouseout", () => tooltip.transition().duration(200).style("opacity", 0));
+                .on("mouseout", () => tooltip.style("opacity", 0))
+                .on("click", (event, d) => zoomToNode(d));
 
-            nodes.append("text")
+            const labels = nodes.append("text")
                 .attr("dx", 4)
                 .attr("dy", 14)
                 .text(d => d.data.name)
-                .attr("font-size", d => Math.min(12, (d.x1 - d.x0) / d.data.name.length * 2)) 
+                .attr("font-size", "8px")
                 .attr("fill", "white")
                 .attr("opacity", d => (d.x1 - d.x0 > 50 && d.y1 - d.y0 > 20) ? 1 : 0);
 
-            const totalHeight = hierarchy.height * 200; 
-            svg.attr("height", totalHeight);
+            const zoomToNode = (focusNode) => {
+                const xScale = width / (focusNode.x1 - focusNode.x0),
+                      yScale = height / (focusNode.y1 - focusNode.y0),
+                      scale = Math.min(xScale, yScale),
+                      translateX = -focusNode.x0 * scale,
+                      translateY = -focusNode.y0 * scale;
 
-            const legendItems = [...new Set(hierarchy.leaves().map(d => d.data.name))]; 
+                svg.transition().duration(750).attr(
+                    "transform",
+                    `translate(${translateX}, ${translateY}) scale(${scale})`
+                );
+
+                labels.transition().duration(750)
+                    .attr("opacity", d => (focusNode === d || focusNode.ancestors().includes(d)) ? 1 : 0);
+            };
+
+            d3.select("#reset-zoom").on("click", () => {
+                svg.transition().duration(750).attr("transform", null);
+                labels.transition().duration(750)
+                    .attr("opacity", d => (d.x1 - d.x0 > 50 && d.y1 - d.y0 > 20) ? 1 : 0);
+            });
+
+            const legendItems = [...new Set(hierarchy.leaves().map(d => d.data.name))];
             legendItems.forEach((name, i) => {
                 const legendItem = d3.select("#legend").append("div").attr("class", "legend-item");
                 legendItem.append("div")
                     .attr("class", "legend-color")
                     .style("background-color", colorScale(name));
                 legendItem.append("span").text(name);
+            });
+
+            const filterType = d3.select("#filter-type");
+            legendItems.forEach(name => {
+                filterType.append("option").text(name).attr("value", name);
+            });
+
+            filterType.on("change", () => {
+                const selected = filterType.node().value;
+                rects.style("opacity", d => (selected === "all" || d.data.name === selected) ? 1 : 0.3);
             });
         }).catch(error => console.error(error));
     </script>

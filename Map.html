@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geographic Map Chart</title>
+    <title>Geographic Map Chart with Enhanced Filters</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <style>
@@ -31,12 +31,21 @@
 </head>
 <body>
     <div class="controls">
-        <label for="province-filter" class="dropdown">Filter by Province:</label>
-        <select id="province-filter">
+        <label for="sex-filter" class="dropdown">Filter by Sex:</label>
+        <select id="sex-filter">
             <option value="all">All</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
         </select>
-        <label for="relationship-filter" class="dropdown">Filter by Infection Case:</label>
-        <select id="relationship-filter">
+        <label for="age-filter" class="dropdown">Filter by Age Group:</label>
+        <select id="age-filter">
+            <option value="all">All</option>
+            <option value="20s">20s</option>
+            <option value="30s">30s</option>
+            <option value="50s">50s</option>
+        </select>
+        <label for="infection-filter" class="dropdown">Filter by Infection Case:</label>
+        <select id="infection-filter">
             <option value="all">All</option>
         </select>
     </div>
@@ -50,21 +59,25 @@
         const svg = d3.select(".map");
 
         const projection = d3.geoMercator()
-            .scale(150) // Adjust scale for zoom level
-            .translate([width / 2, height / 1.5]); // Center the map
+            .scale(150)
+            .translate([width / 2, height / 1.5]);
 
         const path = d3.geoPath().projection(projection);
 
         const tooltip = d3.select("#tooltip");
 
-        // Load GeoJSON and CSV
+        const sexDropdown = d3.select("#sex-filter");
+        const ageDropdown = d3.select("#age-filter");
+        const infectionDropdown = d3.select("#infection-filter");
+
+        let patients = []; 
+
         Promise.all([
-            d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"), // World map
-            d3.csv("PatientInfo.csv") // Your provided CSV file
+            d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"),
+            d3.csv("PatientInfo.csv")
         ]).then(([world, csvData]) => {
             const countries = topojson.feature(world, world.objects.countries);
 
-            // Draw the map
             svg.append("g")
                 .selectAll("path")
                 .data(countries.features)
@@ -74,107 +87,67 @@
                 .attr("fill", "#e0e0e0")
                 .attr("stroke", "#999");
 
-            // Map city, province, and country to coordinates
-            const cityCoordinates = {
-                "Gangseo-gu": { latitude: 37.551, longitude: 126.849 },
-                "Jungnang-gu": { latitude: 37.595, longitude: 127.093 },
-                "Jongno-gu": { latitude: 37.572, longitude: 126.979 },
-                "Mapo-gu": { latitude: 37.565, longitude: 126.901 }
-            };
-
-            // Add latitude and longitude to the CSV data
             csvData.forEach(d => {
-                const coordinates = cityCoordinates[d.city];
-                if (coordinates) {
-                    d.latitude = coordinates.latitude;
-                    d.longitude = coordinates.longitude;
+                d.ageGroup = d.age || "unknown";
+            });
+
+            const infectionCases = Array.from(new Set(csvData.map(d => d.infection_case))).filter(Boolean);
+            infectionCases.forEach(caseType => {
+                infectionDropdown.append("option").attr("value", caseType).text(caseType);
+            });
+
+            const cityCoordinates = {
+                "Gangseo-gu": [126.849, 37.551],
+                "Jungnang-gu": [127.093, 37.595],
+                "Jongno-gu": [126.979, 37.572],
+                "Mapo-gu": [126.901, 37.565],
+                "Seongbuk-gu": [127.020, 37.609]
+            };
+
+            csvData.forEach(d => {
+                const coords = cityCoordinates[d.city];
+                if (coords) {
+                    d.latitude = coords[1];
+                    d.longitude = coords[0];
+                } else {
+                    d.latitude = null;
+                    d.longitude = null;
                 }
             });
 
-            // Filter out rows without coordinates
-            const filteredData = csvData.filter(d => d.latitude && d.longitude);
+            patients = csvData.filter(d => d.latitude && d.longitude);
 
-            // Extract unique values for filters
-            const provinces = Array.from(new Set(filteredData.map(d => d.province)));
-            const relationshipTypes = Array.from(new Set(filteredData.map(d => d.infection_case)));
+            drawNodes(patients);
 
-            // Populate dropdowns
-            const provinceDropdown = d3.select("#province-filter");
-            const relationshipDropdown = d3.select("#relationship-filter");
-
-            provinces.forEach(province => {
-                provinceDropdown.append("option").attr("value", province).text(province);
-            });
-
-            relationshipTypes.forEach(type => {
-                relationshipDropdown.append("option").attr("value", type).text(type);
-            });
-
-            // Create a color scale for infection cases
-            const colorScale = d3.scaleOrdinal()
-                .domain(relationshipTypes)
-                .range(d3.schemeCategory10);
-
-            // Draw pins
-            const drawPins = (data) => {
-                const pins = svg.selectAll(".pin")
-                    .data(data, d => d.patient_id);
-
-                // Enter new pins
-                pins.enter()
-                    .append("circle")
-                    .attr("class", "pin")
-                    .attr("cx", d => projection([d.longitude, d.latitude])[0])
-                    .attr("cy", d => projection([d.longitude, d.latitude])[1])
-                    .attr("r", 5)
-                    .attr("fill", d => colorScale(d.infection_case))
-                    .attr("stroke", "#333")
-                    .attr("stroke-width", 0.5)
-                    .on("mouseover", (event, d) => {
-                        tooltip.transition().duration(200).style("opacity", 0.9);
-                        tooltip.html(`
-                            <strong>City:</strong> ${d.city}<br>
-                            <strong>Province:</strong> ${d.province}<br>
-                            <strong>Infection Case:</strong> ${d.infection_case}
-                        `)
-                        .style("left", `${event.pageX + 10}px`)
-                        .style("top", `${event.pageY + 10}px`);
-                    })
-                    .on("mouseout", () => {
-                        tooltip.transition().duration(200).style("opacity", 0);
-                    });
-
-                // Remove old pins
-                pins.exit().remove();
-            };
-
-            // Initial render
-            drawPins(filteredData);
-
-            // Filter functionality
             const filterData = () => {
-                const selectedProvince = provinceDropdown.node().value;
-                const selectedType = relationshipDropdown.node().value;
+                const selectedSex = sexDropdown.node().value;
+                const selectedAge = ageDropdown.node().value;
+                const selectedCase = infectionDropdown.node().value;
 
-                let filtered = filteredData;
+                let filteredPatients = patients;
 
-                if (selectedProvince !== "all") {
-                    filtered = filtered.filter(d => d.province === selectedProvince);
-                }
-                if (selectedType !== "all") {
-                    filtered = filtered.filter(d => d.infection_case === selectedType);
+                if (selectedSex !== "all") {
+                    filteredPatients = filteredPatients.filter(d => d.sex.toLowerCase() === selectedSex);
                 }
 
-                drawPins(filtered);
+                if (selectedAge !== "all") {
+                    filteredPatients = filteredPatients.filter(d => d.ageGroup === selectedAge);
+                }
+
+                if (selectedCase !== "all") {
+                    filteredPatients = filteredPatients.filter(d => d.infection_case === selectedCase);
+                }
+
+                drawNodes(filteredPatients);
             };
 
-            provinceDropdown.on("change", filterData);
-            relationshipDropdown.on("change", filterData);
+            sexDropdown.on("change", filterData);
+            ageDropdown.on("change", filterData);
+            infectionDropdown.on("change", filterData);
 
-            // Add zoom and pan functionality
             svg.call(
                 d3.zoom()
-                    .scaleExtent([1, 8]) // Zoom levels
+                    .scaleExtent([1, 8])
                     .on("zoom", (event) => {
                         svg.selectAll("g").attr("transform", event.transform);
                     })
@@ -182,6 +155,38 @@
         }).catch(err => {
             console.error("Error loading data:", err);
         });
+
+        const drawNodes = (data) => {
+            const pins = svg.selectAll(".pin")
+                .data(data, d => d.patient_id);
+
+            pins.enter()
+                .append("circle")
+                .attr("class", "pin")
+                .attr("cx", d => projection([d.longitude, d.latitude])[0])
+                .attr("cy", d => projection([d.longitude, d.latitude])[1])
+                .attr("r", 5)
+                .attr("fill", "steelblue")
+                .attr("stroke", "#333")
+                .attr("stroke-width", 0.5)
+                .on("mouseover", (event, d) => {
+                    tooltip.transition().duration(200).style("opacity", 0.9);
+                    tooltip.html(`
+                        <strong>City:</strong> ${d.city}<br>
+                        <strong>Province:</strong> ${d.province}<br>
+                        <strong>Infection Case:</strong> ${d.infection_case}<br>
+                        <strong>Age Group:</strong> ${d.ageGroup}<br>
+                        <strong>Sex:</strong> ${d.sex}
+                    `)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY + 10}px`);
+                })
+                .on("mouseout", () => {
+                    tooltip.transition().duration(200).style("opacity", 0);
+                });
+
+            pins.exit().remove();
+        };
     </script>
 </body>
 </html>
