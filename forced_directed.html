@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Force-Directed Graph with Zoom and Reset</title>
+    <title>Enhanced Interactive Force-Directed Graph</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
@@ -16,61 +16,80 @@
             flex-direction: column;
             align-items: center;
         }
+
         .controls {
             margin: 10px;
             display: flex;
             gap: 10px;
         }
+
         .graph-container {
             position: relative;
         }
+
         .graph {
             border: 1px solid #333;
         }
+
         .tooltip {
             position: absolute;
             text-align: center;
-            padding: 5px;
-            font-size: 12px;
-            background: lightgray;
+            padding: 10px;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
             border: 1px solid gray;
-            border-radius: 3px;
+            border-radius: 5px;
             pointer-events: none;
             opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 10;
         }
+
         .legend {
-            font-size: 12px;
-            fill: white;
+            font-size: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
             margin-top: 10px;
         }
+
         .legend-item {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
         }
+
         .legend-color {
             width: 15px;
             height: 15px;
             margin-right: 5px;
             border: 1px solid #ccc;
         }
-        button {
-            padding: 5px 10px;
+
+        button, select {
+            padding: 8px 15px;
             background-color: #555;
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
-        button:hover {
+
+        button:hover, select:hover {
             background-color: #777;
+        }
+
+        button:focus, select:focus {
+            outline: none;
         }
     </style>
 </head>
 <body>
     <div class="controls">
-        <label for="filter">Filter:</label>
         <select id="filter">
-            <option value="all">All</option>
+            <option value="all">All Provinces</option>
         </select>
         <button id="reset-zoom">Reset Zoom</button>
         <button id="export">Export as Image</button>
@@ -85,42 +104,46 @@
         const width = 1200;
         const height = 800;
 
+        // Zoom behavior
         const zoom = d3.zoom()
-            .scaleExtent([1, 10]) 
+            .scaleExtent([0.5, 10])
             .on("zoom", (event) => {
-                svgGroup.attr("transform", event.transform); 
+                svgGroup.attr("transform", event.transform);
             });
 
         const svg = d3.select(".graph")
-            .call(zoom) // Enables zoom on the SVG
+            .call(zoom)
             .append("g");
 
         const tooltip = d3.select("#tooltip");
 
-        // read the csv and assign colours to nodes for each distinct infection_Case
-        
         d3.csv("Updated_PatientInfo.csv").then(data => {
-            const colorMap = {
-                "overseas inflow": "#1f77b4",
-                "Seoul": "#ff7f0e",
-                "contact with patient": "#2ca02c",
-                "Seongdong-gu APT": "#d62728",
-                "etc": "#9467bd",
-                "Eunpyeong St. Mary's Hospital": "#8c564b",
-                "Shincheonji Church": "#e377c2",
-                "Dongan Church": "#7f7f7f",
-                "Guro-gu Call Center": "#bcbd22",
-                "Itaewon Clubs": "#17becf"
-            };
+            const pastelColors = ["#4f90a6", "#faa476", "#f0746e", "#e34f6f", "#dc3977", "#b9257a", "#7c1d6f"];
 
-            const defaultNodeColor = "purple";
-            const relationshipColor = "#fdae61";
+            const distinctCases = Array.from(new Set(data.map(d => d.infection_case).filter(Boolean)));
+            const pastelColorScale = d3.scaleOrdinal()
+                .domain(distinctCases)
+                .range(pastelColors);
+
+            const caseCounts = d3.rollup(
+                data,
+                group => group.length,
+                d => d.infection_case
+            );
+
+            const provinceCounts = d3.rollup(
+                data,
+                group => group.length,
+                d => d.province
+            );
 
             const nodes = Array.from(new Set(data.flatMap(d => [d.infection_case, d.province])))
                 .filter(d => d !== "")
                 .map(name => ({
                     name,
-                    color: colorMap[name] || defaultNodeColor
+                    color: pastelColorScale(name) || "#555",
+                    case_count: caseCounts.get(name) || provinceCounts.get(name) || 0,
+                    isProvince: provinceCounts.has(name) // Mark province nodes
                 }));
 
             const links = data
@@ -147,7 +170,7 @@
                 .enter()
                 .append("line")
                 .attr("stroke-width", 1.5)
-                .attr("stroke", relationshipColor);
+                .attr("stroke", "#aaa");
 
             const node = svgGroup.append("g")
                 .attr("class", "nodes")
@@ -161,13 +184,27 @@
                 .attr("stroke-width", 0.5)
                 .call(drag(simulation))
                 .on("mouseover", (event, d) => {
-                    tooltip.transition().duration(200).style("opacity", 0.9);
-                    tooltip.html(`<strong>Node:</strong> ${d.name}`)
+                    tooltip.transition().duration(200).style("opacity", 1);
+                    tooltip.html(`
+                        <strong>Node:</strong> ${d.name}<br>
+                        <strong>${d.isProvince ? "Total Cases" : "Cases"}:</strong> ${d.case_count}
+                    `)
                         .style("left", `${event.pageX + 10}px`)
                         .style("top", `${event.pageY + 10}px`);
                 })
                 .on("mouseout", () => tooltip.transition().duration(200).style("opacity", 0))
-                .on("click", (event, d) => alert(`Clicked on node: ${d.name}`));
+                .on("click", (event, d) => {
+                    const scale = 2;
+                    const x = width / 2 - d.x * scale;
+                    const y = height / 2 - d.y * scale;
+
+                    svg.transition()
+                        .duration(750)
+                        .call(
+                            zoom.transform,
+                            d3.zoomIdentity.translate(x, y).scale(scale)
+                        );
+                });
 
             function ticked() {
                 link
@@ -200,7 +237,9 @@
             }
 
             d3.select("#reset-zoom").on("click", () => {
-                svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity); 
+                svg.transition()
+                    .duration(750)
+                    .call(zoom.transform, d3.zoomIdentity);
             });
 
             d3.select("#export").on("click", () => {
@@ -213,34 +252,31 @@
                 link.click();
             });
 
-            const legendData = Object.keys(colorMap).map(key => ({
-                label: key,
-                color: colorMap[key]
-            }));
-
+            // Populate legend
             const legend = d3.select("#legend");
-            legendData.forEach(item => {
+            distinctCases.forEach(caseName => {
                 const legendItem = legend.append("div").attr("class", "legend-item");
                 legendItem.append("div")
                     .attr("class", "legend-color")
-                    .style("background-color", item.color);
-                legendItem.append("span").text(item.label);
+                    .style("background-color", pastelColorScale(caseName));
+                legendItem.append("span").text(caseName);
             });
 
-            // Filter
+            // Populate filter dropdown
+            const provinces = Array.from(new Set(data.map(d => d.province).filter(Boolean)));
             const filterSelect = d3.select("#filter");
-            legendData.forEach(item => {
-                filterSelect.append("option").attr("value", item.label).text(item.label);
+            provinces.forEach(province => {
+                filterSelect.append("option").attr("value", province).text(province);
             });
 
             filterSelect.on("change", () => {
-                const value = filterSelect.node().value;
-                if (value === "all") {
+                const selectedProvince = filterSelect.node().value;
+                if (selectedProvince === "all") {
                     node.style("opacity", 1);
                     link.style("opacity", 1);
                 } else {
-                    node.style("opacity", d => (d.name === value ? 1 : 0.2));
-                    link.style("opacity", d => (d.source.name === value || d.target.name === value ? 1 : 0.2));
+                    node.style("opacity", d => (d.name === selectedProvince || nodes.some(n => n.name === d.name && n.isProvince)) ? 1 : 0.2);
+                    link.style("opacity", d => (d.source.name === selectedProvince || d.target.name === selectedProvince) ? 1 : 0.2);
                 }
             });
         }).catch(error => console.error("Error loading data:", error));

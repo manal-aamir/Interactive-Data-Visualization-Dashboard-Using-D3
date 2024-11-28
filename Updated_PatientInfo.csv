@@ -1467,7 +1467,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 1200000034,male,20s,Korea,Daegu,Jung-gu,Shincheonji Church,,,2020-02-18,2020-03-13,,isolated
 1200000035,female,20s,Korea,Daegu,Nam-gu,Shincheonji Church,,,2020-02-18,2020-03-13,,isolated
 1200000036,female,40s,Korea,Daegu,Nam-gu,Shincheonji Church,,,2020-02-18,2020-03-13,,isolated
-1200000038,female,50s,Korea,Daegu,Nam-gu,contact with patient,,,2020-02-18,2020-03-13,2020-02-23,deceased
+1200000038,female,50s,Korea,Daegu,Nam-gu,contact with patient,,,2020-02-18,2020-02-23,2020-02-23,deceased
 1200000042,female,20s,Korea,Daegu,Nam-gu,Shincheonji Church,,,2020-02-19,2020-03-14,,isolated
 1200000043,female,50s,Korea,Daegu,Dalseo-gu,Shincheonji Church,,,2020-02-19,2020-03-14,,isolated
 1200000044,female,40s,Korea,Daegu,Dalseo-gu,Shincheonji Church,,,2020-02-19,2020-03-14,,isolated
@@ -1506,25 +1506,25 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 1200000088,female,40s,Korea,Daegu,Dong-gu,contact with patient,,,2020-02-20,2020-03-15,,isolated
 1200000089,female,20s,Korea,Daegu,Suseong-gu,contact with patient,,,2020-02-20,2020-03-15,,isolated
 1200000090,female,40s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-20,2020-03-15,,isolated
-1200000114,male,70s,Korea,Daegu,Gyeongsan-si,Shincheonji Church,,,2020-02-21,2020-03-16,2020-02-26,deceased
-1200000620,male,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-24,2020-03-19,2020-03-02,deceased
-1200000901,female,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-25,2020-03-20,2020-03-04,deceased
-1200001064,female,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-21,2020-03-01,deceased
-1200001288,male,60s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-27,2020-03-22,2020-03-02,deceased
-1200001443,male,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-27,2020-03-22,2020-02-27,deceased
-1200001921,male,60s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-23,2020-03-05,deceased
-1200002085,male,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-23,2020-03-04,deceased
-1200002289,male,60s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-23,2020-03-05,deceased
-1200002614,female,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-29,2020-03-24,2020-03-01,deceased
-1200002769,female,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-29,2020-03-24,2020-03-02,deceased
-1200002936,male,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-29,2020-03-24,2020-03-06,deceased
-1200003550,female,60s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-25,2020-03-09,deceased
-1200003578,male,90s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-25,2020-03-07,deceased
-1200003896,male,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-25,2020-03-03,deceased
-1200003914,male,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-25,2020-03-09,deceased
-1200004046,female,50s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-25,2020-03-01,deceased
-1200005767,male,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-05,2020-03-29,2020-03-05,deceased
-1200007196,male,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-08,2020-04-01,2020-03-09,deceased
+1200000114,male,70s,Korea,Daegu,Gyeongsan-si,Shincheonji Church,,,2020-02-21,2020-02-26,2020-02-26,deceased
+1200000620,male,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-24,2020-03-02,2020-03-02,deceased
+1200000901,female,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-25,2020-03-04,2020-03-04,deceased
+1200001064,female,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-01,2020-03-01,deceased
+1200001288,male,60s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-27,2020-03-02,2020-03-02,deceased
+1200001443,male,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-27,2020-02-27,2020-02-27,deceased
+1200001921,male,60s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-05,2020-03-05,deceased
+1200002085,male,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-04,2020-03-04,deceased
+1200002289,male,60s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-05,2020-03-05,deceased
+1200002614,female,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-29,2020-03-01,2020-03-01,deceased
+1200002769,female,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-29,2020-03-02,2020-03-02,deceased
+1200002936,male,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-02-29,2020-03-06,2020-03-06,deceased
+1200003550,female,60s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-09,2020-03-09,deceased
+1200003578,male,90s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-07,2020-03-07,deceased
+1200003896,male,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-03,2020-03-03,deceased
+1200003914,male,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-09,2020-03-09,deceased
+1200004046,female,50s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-01,2020-03-01,2020-03-01,deceased
+1200005767,male,80s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-05,2020-03-05,2020-03-05,deceased
+1200007196,male,70s,Korea,Daegu,Gyeongsan-si,contact with patient,,,2020-03-08,2020-03-09,2020-03-09,deceased
 1200012084,male,40s,Korea,Daegu,Buk-gu,overseas inflow,,,2020-06-13,2020-07-07,,isolated
 1200012077,female,20s,Korea,Daegu,Dalseo-gu,contact with patient,,,2020-06-13,2020-07-07,,isolated
 1200012045,male,20s,Korea,Daegu,Buk-gu,overseas inflow,,,2020-06-12,2020-07-06,,isolated
@@ -2250,7 +2250,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 2000000036,male,30s,Korea,Gyeonggi-do,Bucheon-si,etc,,,2020-02-24,2020-03-19,,isolated
 2000000037,male,30s,Korea,Gyeonggi-do,Anyang-si,Shincheonji Church,,,2020-02-25,2020-03-20,,isolated
 2000000038,female,30s,Korea,Gyeonggi-do,Anyang-si,Shincheonji Church,,,2020-02-24,2020-03-19,,isolated
-2000000039,male,30s,Mongolia,Gyeonggi-do,Namyangju-si,etc,,,2020-02-25,2020-03-20,2020-02-25,deceased
+2000000039,male,30s,Mongolia,Gyeonggi-do,Namyangju-si,etc,,,2020-02-25,2020-02-25,2020-02-25,deceased
 2000000040,female,50s,Korea,Gyeonggi-do,Bucheon-si,etc,,,2020-02-26,2020-03-21,,isolated
 2000000041,male,30s,Korea,Gyeonggi-do,Gimpo-si,etc,,2020-02-19,2020-02-25,2020-03-20,,isolated
 2000000042,male,20s,Korea,Gyeonggi-do,Seongnam-si,Shincheonji Church,,,2020-02-25,2020-03-20,,isolated
@@ -3467,14 +3467,14 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 3013000008,male,80s,Korea,Gangwon-do,Chuncheon-si,Richway,,,2020-06-05,2020-06-29,,isolated
 3013000009,female,20s,Korea,Gangwon-do,Chuncheon-si,etc,,,2020-06-09,2020-07-03,,isolated
 3013000010,female,20s,Korea,Gangwon-do,Chuncheon-si,etc,,,2020-06-13,2020-07-07,,isolated
-3014000001,female,80s,Korea,Gangwon-do,Taebaek-si,contact with patient,,,2020-03-04,2020-03-28,2020-03-04,deceased
+3014000001,female,80s,Korea,Gangwon-do,Taebaek-si,contact with patient,,,2020-03-04,2020-03-04,2020-03-04,deceased
 3010000001,female,30s,Korea,Gangwon-do,Inje-gun,overseas inflow,,,2020-03-24,2020-04-17,,released
 3018000001,male,30s,Korea,Gangwon-do,Hoengseong-gun,overseas inflow,,,2020-03-31,2020-04-19,,released
 3008000001,male,30s,Korea,Gangwon-do,Yeongwol-gun,overseas inflow,,,2020-04-17,2020-05-11,,released
 3012000001,male,70s,Korea,Gangwon-do,Cheorwon-gun,contact with patient,,,2020-03-31,2020-04-24,,released
 3012000002,female,10s,Korea,Gangwon-do,Cheorwon-gun,etc,,,2020-04-02,2020-04-26,,released
 3012000003,female,60s,Korea,Gangwon-do,Cheorwon-gun,contact with patient,,,2020-04-02,2020-04-26,,released
-3012000004,female,70s,Korea,Gangwon-do,Cheorwon-gun,contact with patient,,,2020-04-03,2020-04-27,2020-04-18,deceased
+3012000004,female,70s,Korea,Gangwon-do,Cheorwon-gun,contact with patient,,,2020-04-03,2020-04-18,2020-04-18,deceased
 3012000005,male,70s,Korea,Gangwon-do,Cheorwon-gun,contact with patient,,,2020-04-04,2020-04-28,,released
 3012000006,male,60s,Korea,Gangwon-do,Cheorwon-gun,contact with patient,,,2020-04-06,2020-04-30,,released
 3012000007,male,80s,Korea,Gangwon-do,Cheorwon-gun,contact with patient,,,2020-04-07,2020-05-01,2020-05-25,deceased
@@ -3818,7 +3818,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000059,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-19,,released
 6001000060,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-23,,released
 6001000061,male,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,2020-02-22,2020-02-26,2020-04-11,,released
-6001000062,male,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-21,2020-03-08,deceased
+6001000062,male,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-08,2020-03-08,deceased
 6001000063,female,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-04-01,,released
 6001000064,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-24,,released
 6001000065,female,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-23,,released
@@ -3828,7 +3828,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000069,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-23,,released
 6001000070,male,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-20,,released
 6001000071,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-21,,released
-6001000072,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-21,2020-03-18,deceased
+6001000072,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-18,2020-03-18,deceased
 6001000073,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-11,,released
 6001000074,female,30s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-20,,released
 6001000075,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-26,2020-03-06,,released
@@ -3859,7 +3859,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000100,female,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-04-02,,released
 6001000101,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-25,,released
 6001000102,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-26,,released
-6001000103,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-23,2020-03-11,deceased
+6001000103,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-11,2020-03-11,deceased
 6001000104,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-21,,released
 6001000105,female,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-29,,released
 6001000106,male,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-25,,released
@@ -3879,7 +3879,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000120,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-04-09,,released
 6001000121,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-26,,released
 6001000122,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-04-10,,released
-6001000123,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-23,2020-03-02,deceased
+6001000123,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-03-02,2020-03-02,deceased
 6001000124,male,10s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-28,2020-04-01,,released
 6001000125,female,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-29,2020-03-27,,released
 6001000126,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-02-29,2020-03-13,,released
@@ -4041,7 +4041,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000282,female,30s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-03,2020-03-12,,released
 6001000283,male,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-03,2020-03-24,,released
 6001000284,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-03,2020-03-27,,released
-6001000285,male,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-03,2020-03-27,2020-03-04,deceased
+6001000285,male,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-03,2020-03-04,2020-03-04,deceased
 6001000286,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-03,2020-03-26,,released
 6001000287,male,30s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-03,2020-03-26,,released
 6001000288,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-03,2020-04-06,,released
@@ -4158,7 +4158,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000399,female,40s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-05,2020-03-22,,released
 6001000400,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-05,2020-03-29,,released
 6001000401,female,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-05,2020-04-16,,released
-6001000402,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-05,2020-03-29,2020-03-16,deceased
+6001000402,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-05,2020-03-16,2020-03-16,deceased
 6001000403,male,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-05,2020-04-08,,released
 6001000404,female,30s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-05,2020-03-16,,released
 6001000405,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Cham Joeun Community Center,,,2020-03-06,2020-04-07,,released
@@ -4216,7 +4216,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000457,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-28,,released
 6001000458,female,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-21,,released
 6001000459,female,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Cham Joeun Community Center,,,2020-03-07,2020-03-31,,released
-6001000460,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-31,2020-03-20,deceased
+6001000460,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-20,2020-03-20,deceased
 6001000461,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-04-04,,released
 6001000462,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-05-03,,released
 6001000463,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-04-22,,released
@@ -4228,7 +4228,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000469,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-26,,released
 6001000470,male,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-19,,released
 6001000471,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-18,,released
-6001000472,female,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-31,2020-03-16,deceased
+6001000472,female,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-16,2020-03-16,deceased
 6001000473,female,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-07,2020-03-30,,released
 6001000474,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-08,2020-04-01,,released
 6001000475,male,10s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-08,2020-03-28,,released
@@ -4256,8 +4256,8 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000497,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Seorin Nursing Home,,,2020-03-09,2020-05-12,,released
 6001000498,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-09,2020-03-19,,released
 6001000499,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Seorin Nursing Home,,,2020-03-10,2020-04-07,,released
-6001000500,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-10,2020-04-03,2020-03-26,deceased
-6001000501,male,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-10,2020-04-03,2020-03-26,deceased
+6001000500,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-10,2020-03-26,2020-03-26,deceased
+6001000501,male,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-10,2020-03-26,2020-03-26,deceased
 6001000502,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Seorin Nursing Home,,,2020-03-10,2020-05-11,,released
 6001000503,female,100s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Seorin Nursing Home,,,2020-03-10,2020-05-15,,released
 6001000504,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Seorin Nursing Home,,,2020-03-10,2020-04-13,,released
@@ -4284,7 +4284,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000525,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Seorin Nursing Home,,,2020-03-15,2020-04-15,,released
 6001000526,female,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Cham Joeun Community Center,,,2020-03-15,2020-04-05,,released
 6001000527,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-16,2020-06-18,,released
-6001000528,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-15,2020-04-08,2020-03-16,deceased
+6001000528,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-15,2020-03-16,2020-03-16,deceased
 6001000529,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-16,2020-04-24,,released
 6001000530,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,Gyeongsan Seorin Nursing Home,,,2020-03-16,2020-05-17,,released
 6001000531,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-17,2020-04-07,,released
@@ -4321,16 +4321,16 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000562,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-10,,released
 6001000563,female,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-05-10,,released
 6001000564,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-29,,released
-6001000565,male,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-13,2020-04-02,deceased
+6001000565,male,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-02,2020-04-02,deceased
 6001000566,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-21,,released
-6001000567,male,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-04-13,2020-03-27,deceased
-6001000568,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-04-13,2020-03-25,deceased
+6001000567,male,90s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-03-27,2020-03-27,deceased
+6001000568,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-03-25,2020-03-25,deceased
 6001000569,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-10,,released
 6001000570,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-05-01,,released
-6001000571,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-04-13,2020-03-29,deceased
-6001000572,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-13,2020-04-03,deceased
-6001000573,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-04-13,2020-03-25,deceased
-6001000574,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-04-13,2020-03-24,deceased
+6001000571,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-03-29,2020-03-29,deceased
+6001000572,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-03,2020-04-03,deceased
+6001000573,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-03-25,2020-03-25,deceased
+6001000574,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-20,2020-03-24,2020-03-24,deceased
 6001000575,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-05-07,,released
 6001000576,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-06-02,,released
 6001000577,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-05-13,,released
@@ -4338,13 +4338,13 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000579,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-17,,released
 6001000580,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-16,,released
 6001000581,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-17,,released
-6001000582,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-13,2020-04-05,deceased
+6001000582,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-04-05,2020-04-05,deceased
 6001000583,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-20,2020-05-26,,released
-6001000584,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-21,2020-04-14,2020-03-31,deceased
+6001000584,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-21,2020-03-31,2020-03-31,deceased
 6001000585,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-23,2020-04-21,,released
 6001000586,female,30s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-24,2020-04-18,,released
 6001000587,male,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-24,2020-04-28,,released
-6001000588,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-25,2020-04-18,2020-03-26,deceased
+6001000588,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-25,2020-03-26,2020-03-26,deceased
 6001000589,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-25,2020-04-13,,released
 6001000590,female,20s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-25,2020-04-25,,released
 6001000591,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-25,2020-05-04,,released
@@ -4355,7 +4355,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000596,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-26,2020-04-28,,released
 6001000597,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-26,2020-05-31,,released
 6001000598,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-26,2020-04-25,,released
-6001000599,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-26,2020-04-19,2020-04-06,deceased
+6001000599,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-26,2020-04-06,2020-04-06,deceased
 6001000600,male,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-26,2020-05-27,,released
 6001000601,male,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-26,2020-04-16,,released
 6001000602,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-26,2020-05-12,,released
@@ -4366,9 +4366,9 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6001000607,female,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-29,2020-05-02,,released
 6001000608,female,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-29,2020-04-24,,released
 6001000609,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-29,2020-05-08,,released
-6001000610,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-29,2020-04-22,2020-03-31,deceased
+6001000610,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-29,2020-03-31,2020-03-31,deceased
 6001000611,female,70s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-29,2020-05-02,,released
-6001000612,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-29,2020-04-22,2020-04-03,deceased
+6001000612,female,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-29,2020-04-03,2020-04-03,deceased
 6001000613,male,50s,Korea,Gyeongsangbuk-do,Gyeongsan-si,contact with patient,,,2020-03-29,2020-04-08,,released
 6001000614,male,60s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-30,2020-05-03,,released
 6001000615,male,80s,Korea,Gyeongsangbuk-do,Gyeongsan-si,etc,,,2020-03-31,2020-05-15,,released
@@ -4629,7 +4629,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6008000057,female,80s,Korea,Gyeongsangbuk-do,Bonghwa-gun,Bonghwa Pureun Nursing Home,,,2020-03-11,2020-04-04,,isolated
 6008000058,female,70s,Korea,Gyeongsangbuk-do,Bonghwa-gun,Bonghwa Pureun Nursing Home,,,2020-03-11,2020-04-04,,isolated
 6008000059,female,90s,Korea,Gyeongsangbuk-do,Bonghwa-gun,Bonghwa Pureun Nursing Home,,,2020-03-11,2020-04-04,,isolated
-6008000060,female,90s,Korea,Gyeongsangbuk-do,Bonghwa-gun,Bonghwa Pureun Nursing Home,,,2020-03-11,2020-04-04,2020-03-22,deceased
+6008000060,female,90s,Korea,Gyeongsangbuk-do,Bonghwa-gun,Bonghwa Pureun Nursing Home,,,2020-03-11,2020-03-22,2020-03-22,deceased
 6008000061,male,80s,Korea,Gyeongsangbuk-do,Bonghwa-gun,Bonghwa Pureun Nursing Home,,,2020-03-15,2020-04-08,,isolated
 6008000062,female,80s,Korea,Gyeongsangbuk-do,Bonghwa-gun,Bonghwa Pureun Nursing Home,,,2020-03-17,2020-04-10,,isolated
 6008000063,female,80s,Korea,Gyeongsangbuk-do,Bonghwa-gun,Bonghwa Pureun Nursing Home,,,2020-03-19,2020-04-12,,isolated
@@ -4669,7 +4669,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6010000011,female,20s,Korea,Gyeongsangbuk-do,Seongju-gun,contact with patient,,,2020-02-28,2020-03-23,,released
 6010000012,male,70s,Korea,Gyeongsangbuk-do,Seongju-gun,etc,,,2020-02-29,2020-03-24,,released
 6010000013,male,50s,Korea,Gyeongsangbuk-do,Seongju-gun,etc,,,2020-03-01,2020-03-25,,released
-6010000014,male,80s,Korea,Gyeongsangbuk-do,Seongju-gun,contact with patient,,2020-02-26,2020-03-04,2020-03-28,2020-03-05,deceased
+6010000014,male,80s,Korea,Gyeongsangbuk-do,Seongju-gun,contact with patient,,2020-02-26,2020-03-04,2020-03-05,2020-03-05,deceased
 6010000015,female,70s,Korea,Gyeongsangbuk-do,Seongju-gun,contact with patient,,2020-02-27,2020-03-04,2020-03-28,,released
 6010000016,female,40s,Korea,Gyeongsangbuk-do,Seongju-gun,contact with patient,,,2020-03-04,2020-03-28,,released
 6010000017,female,20s,Korea,Gyeongsangbuk-do,Seongju-gun,etc,,,2020-03-04,2020-03-28,,released
@@ -4775,7 +4775,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6015000032,female,20s,Korea,Gyeongsangbuk-do,Yeongcheon-si,etc,,,2020-03-03,2020-04-05,,released
 6015000033,male,80s,Korea,Gyeongsangbuk-do,Yeongcheon-si,etc,,,2020-03-05,2020-04-10,,released
 6015000034,female,80s,Korea,Gyeongsangbuk-do,Yeongcheon-si,etc,,,2020-03-05,2020-03-25,,released
-6015000035,male,70s,Korea,Gyeongsangbuk-do,Yeongcheon-si,etc,,,2020-03-06,2020-03-30,2020-03-07,deceased
+6015000035,male,70s,Korea,Gyeongsangbuk-do,Yeongcheon-si,etc,,,2020-03-06,2020-03-07,2020-03-07,deceased
 6015000036,female,70s,Korea,Gyeongsangbuk-do,Yeongcheon-si,contact with patient,,,2020-03-06,2020-03-30,,isolated
 6015000037,male,20s,Korea,Gyeongsangbuk-do,Yeongcheon-si,contact with patient,,,2020-06-23,2020-07-17,,isolated
 6016000001,female,50s,Korea,Gyeongsangbuk-do,Yecheon-gun,Pilgrimage to Israel,,,2020-02-21,2020-03-11,,released
@@ -4797,7 +4797,7 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6016000017,female,10s,Korea,Gyeongsangbuk-do,Yecheon-gun,contact with patient,6016000012,,2020-04-11,2020-05-05,,isolated
 6016000018,male,60s,Korea,Gyeongsangbuk-do,Yecheon-gun,contact with patient,6016000015,,2020-04-12,2020-05-06,,isolated
 6016000019,male,10s,Korea,Gyeongsangbuk-do,Yecheon-gun,contact with patient,6016000012,,2020-04-12,2020-05-06,,isolated
-6016000020,female,80s,Korea,Gyeongsangbuk-do,Yecheon-gun,contact with patient,6016000015,,2020-04-12,2020-05-06,2020-04-22,deceased
+6016000020,female,80s,Korea,Gyeongsangbuk-do,Yecheon-gun,contact with patient,6016000015,,2020-04-12,2020-04-22,2020-04-22,deceased
 6016000021,female,50s,Korea,Gyeongsangbuk-do,Yecheon-gun,contact with patient,6016000011,,2020-04-12,2020-04-28,,released
 6016000022,male,50s,Korea,Gyeongsangbuk-do,Yecheon-gun,contact with patient,6016000011,,2020-04-13,2020-05-07,,isolated
 6016000023,male,10s,Korea,Gyeongsangbuk-do,Yecheon-gun,contact with patient,6016000009,,2020-04-13,2020-05-07,,isolated
@@ -4899,13 +4899,13 @@ patient_id,sex,age,country,province,city,infection_case,infected_by,symptom_onse
 6020000034,female,80s,Korea,Gyeongsangbuk-do,Cheongdo-gun,contact with patient,,,2020-03-09,2020-04-02,,released
 6020000035,female,60s,Korea,Gyeongsangbuk-do,Cheongdo-gun,contact with patient,,,2020-03-11,2020-04-04,,released
 6020000036,female,90s,Korea,Gyeongsangbuk-do,Cheongdo-gun,contact with patient,,,2020-03-13,2020-04-06,,released
-6020100054,male,50s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-19,2020-03-14,2020-02-23,deceased
-6020100055,male,50s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-19,2020-03-14,2020-02-23,deceased
-6020100104,male,60s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-20,2020-03-15,2020-02-19,deceased
-6020100107,male,60s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-21,2020-03-16,2020-02-24,deceased
-6020100205,female,50s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-22,2020-03-17,2020-02-21,deceased
-6020100286,male,60s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-22,2020-03-17,2020-02-23,deceased
-6020100298,male,50s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-22,2020-03-17,2020-02-25,deceased
+6020100054,male,50s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-19,2020-02-23,2020-02-23,deceased
+6020100055,male,50s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-19,2020-02-23,2020-02-23,deceased
+6020100104,male,60s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-20,2020-02-19,2020-02-19,deceased
+6020100107,male,60s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-21,2020-02-24,2020-02-24,deceased
+6020100205,female,50s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-22,2020-02-21,2020-02-21,deceased
+6020100286,male,60s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-22,2020-02-23,2020-02-23,deceased
+6020100298,male,50s,Korea,Gyeongsangbuk-do,Cheongdo-gun,Cheongdo Daenam Hospital,,,2020-02-22,2020-02-25,2020-02-25,deceased
 6021000001,male,20s,Korea,Gyeongsangbuk-do,Cheongsong-gun,contact with patient,,,2020-02-24,2020-03-19,,released
 6021000002,male,20s,Korea,Gyeongsangbuk-do,Cheongsong-gun,contact with patient,,,2020-02-26,2020-03-21,,released
 6022000001,male,50s,Korea,Gyeongsangbuk-do,Chilgok-gun,contact with patient,,,2020-02-23,2020-03-06,,released
