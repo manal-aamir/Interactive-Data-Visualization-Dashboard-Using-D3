@@ -4,137 +4,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geographic Representation</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <title>COVID-19 Interactive Map</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            color: #333;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            background: #f4f7f6;
+            height: 100vh;
+            overflow: hidden;
         }
 
         h1 {
-            margin: 20px 0;
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
         }
 
-        #filters {
+        #controls {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            margin-top: 20px;
         }
 
-        select, button {
+        select {
             padding: 8px;
+            font-size: 14px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            font-size: 14px;
-            cursor: pointer;
+        }
+
+        /* Container for map and legend */
+        .map-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            width: 90%;
+            height: 75vh;
+            margin-bottom: 30px;
+            overflow: hidden;
         }
 
         #map {
-            height: 600px;
-            width: 90%;
-            max-width: 1200px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            height: 100%; /* Ensure the map fits inside the container */
+            display: block;
         }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            opacity: 0;
+            padding: 12px;
+            border-radius: 5px;
+            pointer-events: none;
+            font-size: 12px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .legend {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+
+        .error {
+            color: red;
+            font-size: 16px;
+            text-align: center;
+        }
+
     </style>
 </head>
 
 <body>
-    <h1>Geographic Representation</h1>
-    <div id="filters">
-        <select id="region-filter">
-            <option value="all">All Regions</option>
-            <option value="north">North</option>
-            <option value="south">South</option>
-        </select>
-        <select id="relationship-filter">
-            <option value="all">All Relationships</option>
-            <option value="type1">Type 1</option>
-            <option value="type2">Type 2</option>
-        </select>
-        <button onclick="resetMap()">Reset</button>
+    <h1>COVID-19 Cases by Region</h1>
+
+    <div id="controls">
+        <div>
+            <label for="region">Select Region:</label>
+            <select id="region">
+                <option value="all">All</option>
+            </select>
+        </div>
+        <div id="tooltip" class="tooltip"></div>
+        <button id="reset-zoom-btn">Reset Zoom</button>
     </div>
-    <div id="map"></div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Map Container -->
+    <div class="map-container">
+        <div id="map"></div>
+        <div class="legend" id="legend"></div>
+    </div>
+
     <script>
-        // Initialize the map
-        const map = L.map('map').setView([37.7749, -122.4194], 5); // Centered at California
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+        const width = window.innerWidth;
+        const height = window.innerHeight;
 
-        // Sample Data
-        const locations = [
-            { id: 1, name: "Location A", lat: 37.7749, lng: -122.4194, region: "north", relationship: "type1" },
-            { id: 2, name: "Location B", lat: 34.0522, lng: -118.2437, region: "south", relationship: "type2" },
-            { id: 3, name: "Location C", lat: 36.7783, lng: -119.4179, region: "north", relationship: "type1" },
-            { id: 4, name: "Location D", lat: 40.7128, lng: -74.0060, region: "south", relationship: "type2" }
-        ];
+        const svg = d3.select("#map").append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
-        // Add pins to the map
-        const markers = locations.map(location => {
-            const marker = L.circleMarker([location.lat, location.lng], {
-                radius: 8,
-                color: location.relationship === "type1" ? "blue" : "green",
-                fillOpacity: 0.7
-            }).addTo(map);
-            marker.bindPopup(`<b>${location.name}</b><br>Region: ${location.region}<br>Type: ${location.relationship}`);
-            marker.on('mouseover', function () {
-                marker.openPopup();
+        const tooltip = d3.select("#tooltip");
+
+        // Projection to show multiple countries side by side
+        const projection = d3.geoMercator()
+            .center([135, 37]) // Adjust this center for multiple countries
+            .scale(4000)
+            .translate([width / 2, height / 2]);
+
+        const path = d3.geoPath().projection(projection);
+
+        const zoom = d3.zoom()
+            .scaleExtent([1, 8])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
             });
-            marker.on('click', function () {
-                highlightRelatedEntities(location.relationship);
-            });
-            return { marker, ...location };
+
+        svg.call(zoom);
+
+        const g = svg.append("g");
+
+        // Define color scale for confirmed cases
+        const colorScale = d3.scaleQuantize()
+            .range(["#fdd0a2", "#fdae6b", "#fd8d3c", "#f16913", "#d94801", "#a63603", "#7f2704"]);
+
+        // Load data with error handling
+        Promise.all([
+            d3.json("/data/korea.geojson"),
+            d3.csv("/data/Case.csv"),
+            d3.csv("/data/Region.csv")
+        ]).then(([geoData, caseData, regionData]) => {
+            if (!geoData || !caseData || !regionData) {
+                throw new Error("Failed to load one or more data files");
+            }
+
+            // Data processing: Convert and filter valid coordinates
+            const validCaseData = caseData
+                .map(d => ({
+                    ...d,
+                    latitude: parseFloat(d.latitude),
+                    longitude: parseFloat(d.longitude),
+                    confirmed: +d.confirmed,
+                    province: d.province,
+                    city: d.city
+                }))
+                .filter(d => !isNaN(d.latitude) && !isNaN(d.longitude));
+
+            // Draw map (regions)
+            g.selectAll("path")
+                .data(geoData.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .attr("fill", "#f0f0f0")
+                .attr("stroke", "#999")
+                .attr("stroke-width", 0.5)
+                .on("mouseover", (event, d) => {
+                    tooltip.style("opacity", 1)
+                        .html(`Region: ${d.properties.NAME_1 || "Unknown"}`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("opacity", 0);
+                });
+
+            // Render pins (cases) based on latitude, longitude, and confirmed cases
+            renderPins(validCaseData);
+
+            // Setup event listeners for region filter
+            setupEventListeners(validCaseData);
+
+            // Create the legend for confirmed cases
+            createLegend();
+
+        }).catch(error => {
+            console.error("Error loading data:", error);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = 'Error loading map data. Please check if all data files exist.';
+            document.body.appendChild(errorDiv);
         });
 
-        // Filter Functionality
-        document.getElementById('region-filter').addEventListener('change', (e) => {
-            filterMap();
-        });
+        // Function to render pins based on case data
+        function renderPins(caseData) {
+            g.selectAll("circle")
+                .data(caseData)
+                .enter()
+                .append("circle")
+                .attr("cx", d => projection([d.longitude, d.latitude])[0])  // Longitude, Latitude for placement
+                .attr("cy", d => projection([d.longitude, d.latitude])[1])  // Longitude, Latitude for placement
+                .attr("r", 0) // Start with radius 0 for transition
+                .attr("fill", "#377eb8") // Single color for all cases
+                .attr("opacity", 0.7)
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1)
+                .on("mouseover", (event, d) => {
+                    tooltip.style("opacity", 1)
+                        .html(`
+                            <strong>Location:</strong> ${d.city}<br/>
+                            <strong>Confirmed:</strong> ${d.confirmed}
+                        `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("opacity", 0);
+                })
+                .transition()
+                .duration(750)
+                .attr("r", d => Math.sqrt(d.confirmed) * 0.5) // Radius proportional to confirmed cases
+                .attr("opacity", 0.9);
+        }
 
-        document.getElementById('relationship-filter').addEventListener('change', (e) => {
-            filterMap();
-        });
+        // Event listeners for region filter changes
+        function setupEventListeners(data) {
+            const regionSelect = d3.select("#region");
 
-        function filterMap() {
-            const region = document.getElementById('region-filter').value;
-            const relationship = document.getElementById('relationship-filter').value;
-
-            markers.forEach(({ marker, region: locRegion, relationship: locRelationship }) => {
-                if ((region === "all" || locRegion === region) &&
-                    (relationship === "all" || locRelationship === relationship)) {
-                    marker.addTo(map);
-                } else {
-                    marker.removeFrom(map);
-                }
+            // Populate regions dynamically
+            const regions = Array.from(new Set(data.map(d => d.province))).sort();
+            regions.forEach(region => {
+                regionSelect.append("option")
+                    .attr("value", region)
+                    .text(region);
             });
+
+            // Function to update the map based on selected region
+            function updatePins() {
+                const selectedRegion = regionSelect.property("value");
+
+                // Filter the case data based on the selected region
+                const filteredData = data.filter(d => selectedRegion === "all" || d.province === selectedRegion);
+
+                g.selectAll("circle").remove();
+                renderPins(filteredData);
+            }
+
+            regionSelect.on("change", updatePins);
         }
 
-        function highlightRelatedEntities(relationshipType) {
-            markers.forEach(({ marker, relationship }) => {
-                if (relationship === relationshipType) {
-                    marker.setStyle({ color: "red" });
-                } else {
-                    marker.setStyle({ color: relationship === "type1" ? "blue" : "green" });
-                }
-            });
+        // Create a color legend
+        function createLegend() {
+            const legendData = [
+                { label: "Confirmed Cases", color: "#377eb8" }
+            ];
+
+            const legend = d3.select("#legend")
+            .style("background", "rgba(255, 255, 255, 0.9)")
+                .style("padding", "15px")
+                .style("border-radius", "15px")
+                .style("box-shadow", "0px 4px 8px rgba(0, 0, 0, 0.2)");
+
+            legend.selectAll(".legend-item")
+                .data(legendData)
+                .enter()
+                .append("div")
+                .attr("class", "legend-item")
+                .each(function (d) {
+                    const item = d3.select(this);
+                    item.append("div")
+                        .attr("class", "legend-color")
+                        .style("background-color", d.color)
+                        .style("width", "15px")
+                        .style("height", "15px")
+                        .style("border-radius", "50%");
+                    item.append("span").text(d.label)
+                        .style("margin-left", "5px")
+                        .style("font-size", "14px");
+                });
         }
 
-        function resetMap() {
-            document.getElementById('region-filter').value = "all";
-            document.getElementById('relationship-filter').value = "all";
-            filterMap();
-        }
+        // Reset Zoom functionality
+        d3.select("#reset-zoom-btn").on("click", () => {
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity);
+        });
     </script>
 </body>
 
