@@ -4,110 +4,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Enhanced Dashboard</title>
     <style>
+        /* Body Styling */
         body {
-            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            background: linear-gradient(135deg, #f0f8ff, #c8dfff);
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            overflow: hidden; /* Prevent scrolling during loading */
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #4a69bd, #6a89cc);
             display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #c8dfff;
+            border-top: 6px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading Bar */
+        .loading-bar-container {
+            width: 80%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .loading-bar {
+            height: 10px;
+            width: 0;
+            background: #ffffff;
+            animation: loading 3s linear forwards;
+        }
+
+        @keyframes loading {
+            to {
+                width: 100%;
+            }
+        }
+
+        /* Dashboard */
+        #dashboard {
+            display: none; /* Hidden initially */
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            color: #333;
         }
 
-        .controls {
-            background-color: #4f4b8c;
-            padding: 10px 20px;
-            border-radius: 30px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: space-between;
-            color: white;
-            width: 95%;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .controls label,
-        .controls select,
-        .controls button,
-        .controls input {
-            flex: 1;
-            max-width: 150px;
+        /* Dashboard Header */
+        .header {
             text-align: center;
-            margin: 5px;
-        }
-
-        button,
-        select,
-        input[type="date"] {
-            background-color: #6c63ff;
+            margin-bottom: 30px;
+            padding: 15px 30px;
+            background: linear-gradient(to right, #6a89cc, #4a69bd);
+            border-radius: 15px;
             color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 8px 15px;
-            font-size: 14px;
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
         }
 
-        button:hover,
-        select:hover,
-        input[type="date"]:hover {
-            background-color: #4e4dc8;
-            transform: scale(1.05);
+        .header h1 {
+            font-size: 42px;
+            margin: 0;
+            font-weight: bold;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .header p {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        /* Dashboard Layout */
         .layout {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-gap: 20px;
-            width: 95%;
+            grid-template-columns: repeat(2, 1fr); /* Adjust layout for wider view */
+            grid-gap: 30px;
+            width: 90%; /* Make layout wider */
+            max-width: 1600px;
             margin: 0 auto;
-            box-sizing: border-box;
         }
 
+        /* Card Styling */
         .card {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 15px;
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            height: 600px; /* Increased height */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Overlay for Click to View */
+        .card .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            display: flex;
             justify-content: center;
             align-items: center;
-            height: 400px;
-            overflow: hidden;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .card:hover .overlay {
+            opacity: 1;
         }
 
         .card iframe {
             width: 100%;
             height: 100%;
             border: none;
-            border-radius: 15px;
+            z-index: 1;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 1024px) {
+            .layout {
+                grid-template-columns: 1fr; /* Stack charts vertically for smaller screens */
+            }
+
+            .card {
+                height: 500px; /* Reduce height for smaller screens */
+            }
         }
     </style>
 </head>
 
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+        <p>Loading Dashboard...</p>
+    </div>
 
-    <!-- Dashboard Layout -->
-    <div class="layout">
-        <div class="card">
-            <iframe src="TreeMap.html"></iframe>
+    <!-- Dashboard -->
+    <div id="dashboard">
+        <!-- Dashboard Header -->
+        <div class="header">
+            <h1>Data Visualization Dashboard</h1>
+            <p>Explore insightful visualizations in a clean and modern interface</p>
         </div>
-        <div class="card">
-            <iframe src="timeline.html"></iframe>
-        </div>
-        <div class="card">
-            <iframe src="sunburst.html"></iframe>
-        </div>
-        <div class="card">
-            <iframe src="forced_directed.html"></iframe>
+
+        <!-- Dashboard Layout -->
+        <div class="layout">
+            <div class="card">
+                <div class="overlay" onclick="navigateTo('TreeMap.html')">Click Here to View</div>
+                <iframe src="TreeMap.html"></iframe>
+            </div>
+            <div class="card">
+                <div class="overlay" onclick="navigateTo('timeline.html')">Click Here to View</div>
+                <iframe src="timeline.html"></iframe>
+            </div>
+            <div class="card">
+                <div class="overlay" onclick="navigateTo('sunburst.html')">Click Here to View</div>
+                <iframe src="sunburst.html"></iframe>
+            </div>
+            <div class="card">
+                <div class="overlay" onclick="navigateTo('forced_directed.html')">Click Here to View</div>
+                <iframe src="forced_directed.html"></iframe>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Simulate loading
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loading-screen');
+            const dashboard = document.getElementById('dashboard');
+            
+            setTimeout(() => {
+                loadingScreen.style.display = 'none'; // Hide the loading screen
+                dashboard.style.display = 'flex'; // Show the dashboard
+            }, 3000); // Simulated loading time (3 seconds)
+        });
+
+        function navigateTo(url) {
+            window.location.href = url; // Redirect to the iframe source
+        }
+    </script>
 </body>
 
 </html>

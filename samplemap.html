@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geographic Representation</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f4f7f6;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        #filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        select, button {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #map {
+            height: 600px;
+            width: 90%;
+            max-width: 1200px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Geographic Representation</h1>
+    <div id="filters">
+        <select id="region-filter">
+            <option value="all">All Regions</option>
+            <option value="north">North</option>
+            <option value="south">South</option>
+        </select>
+        <select id="relationship-filter">
+            <option value="all">All Relationships</option>
+            <option value="type1">Type 1</option>
+            <option value="type2">Type 2</option>
+        </select>
+        <button onclick="resetMap()">Reset</button>
+    </div>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([37.7749, -122.4194], 5); // Centered at California
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Sample Data
+        const locations = [
+            { id: 1, name: "Location A", lat: 37.7749, lng: -122.4194, region: "north", relationship: "type1" },
+            { id: 2, name: "Location B", lat: 34.0522, lng: -118.2437, region: "south", relationship: "type2" },
+            { id: 3, name: "Location C", lat: 36.7783, lng: -119.4179, region: "north", relationship: "type1" },
+            { id: 4, name: "Location D", lat: 40.7128, lng: -74.0060, region: "south", relationship: "type2" }
+        ];
+
+        // Add pins to the map
+        const markers = locations.map(location => {
+            const marker = L.circleMarker([location.lat, location.lng], {
+                radius: 8,
+                color: location.relationship === "type1" ? "blue" : "green",
+                fillOpacity: 0.7
+            }).addTo(map);
+            marker.bindPopup(`<b>${location.name}</b><br>Region: ${location.region}<br>Type: ${location.relationship}`);
+            marker.on('mouseover', function () {
+                marker.openPopup();
+            });
+            marker.on('click', function () {
+                highlightRelatedEntities(location.relationship);
+            });
+            return { marker, ...location };
+        });
+
+        // Filter Functionality
+        document.getElementById('region-filter').addEventListener('change', (e) => {
+            filterMap();
+        });
+
+        document.getElementById('relationship-filter').addEventListener('change', (e) => {
+            filterMap();
+        });
+
+        function filterMap() {
+            const region = document.getElementById('region-filter').value;
+            const relationship = document.getElementById('relationship-filter').value;
+
+            markers.forEach(({ marker, region: locRegion, relationship: locRelationship }) => {
+                if ((region === "all" || locRegion === region) &&
+                    (relationship === "all" || locRelationship === relationship)) {
+                    marker.addTo(map);
+                } else {
+                    marker.removeFrom(map);
+                }
+            });
+        }
+
+        function highlightRelatedEntities(relationshipType) {
+            markers.forEach(({ marker, relationship }) => {
+                if (relationship === relationshipType) {
+                    marker.setStyle({ color: "red" });
+                } else {
+                    marker.setStyle({ color: relationship === "type1" ? "blue" : "green" });
+                }
+            });
+        }
+
+        function resetMap() {
+            document.getElementById('region-filter').value = "all";
+            document.getElementById('relationship-filter').value = "all";
+            filterMap();
+        }
+    </script>
+</body>
+
+</html>
