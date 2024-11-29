@@ -27,6 +27,7 @@
             display: flex;
             gap: 15px;
             color: white;
+            align-items: center;
         }
 
         label {
@@ -42,8 +43,8 @@
             color: white;
             border: none;
             border-radius: 30px;
-            padding: 10px 15px;
-            font-size: 14px;
+            padding: 5px 10px; 
+            font-size: 12px;
             transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
@@ -134,11 +135,39 @@
             pointer-events: none;
             transition: opacity 0.2s ease-in-out;
         }
+
+        .back-button {
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 5px 10px; 
+            font-size: 12px; 
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .back-button:hover {
+            background-color: #4e4dc8;
+            transform: scale(1.05);
+        }
+
+        .back-button svg {
+            margin-right: 8px;
+        }
     </style>
 </head>
 
 <body>
     <div class="controls">
+        <button class="back-button" onclick="goBack()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z"/>
+            </svg>
+        </button>
         <label for="filter-type">Filter by Type:</label>
         <select id="filter-type">
             <option value="all">All</option>
@@ -156,6 +185,10 @@
         </div>
     </div>
     <script>
+        function goBack() {
+            window.location.href = 'dashboard.html'; 
+        }
+
         const width = 1500;
         const height = 1200;
         const colorScheme = ["#4f90a6", "#faa476", "#f0746e", "#e34f6f", "#dc3977", "#b9257a", "#7c1d6f",
@@ -254,15 +287,13 @@
                     .attr("opacity", d => (d.x1 - d.x0 > 50 && d.y1 - d.y0 > 20) ? 1 : 0);
             });
 
-            // Sorted legend items by color
             const legendItems = [...new Set(hierarchy.leaves().map(d => d.data.name))]
                 .map(name => ({
                     name: name,
                     color: colorScale(name)
                 }))
-                .sort((a, b) => d3.ascending(a.color, b.color)); // Sort by color
+                .sort((a, b) => d3.ascending(a.color, b.color)); 
 
-            // Populate the legend
             legendItems.forEach((item) => {
                 const legendItem = d3.select("#legend").append("div").attr("class", "legend-item");
                 legendItem.append("div")

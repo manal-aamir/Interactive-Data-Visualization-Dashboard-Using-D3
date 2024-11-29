@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Force-Directed Graph</title>
+    <title>Force-Directed Graph</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
@@ -52,19 +52,15 @@
             width: 95%;
             height: calc(100% - 90px);
             border-radius: 30px;
-            /* Ensure layout edges are rounded */
             overflow: hidden;
-            /* Prevent overflow beyond the border radius */
         }
 
         .legend-container {
             width: 25%;
             height: 100%;
-            /* Match height with graph container */
             background-color: #f9f9f9;
             padding: 15px;
             border-radius: 30px;
-            /* Add rounded corners */
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             overflow-y: auto;
             scroll-behavior: smooth;
@@ -100,11 +96,9 @@
         .graph-container {
             flex-grow: 1;
             height: 100%;
-            /* Match height with legend container */
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             background-color: #f9f9f9;
             border-radius: 30px;
-            /* Add rounded corners */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -112,7 +106,6 @@
 
         .graph {
             border-radius: 30px;
-            /* Match graph container rounding */
             width: 100%;
             height: 100%;
         }
@@ -131,12 +124,39 @@
             pointer-events: none;
             transition: opacity 0.2s ease-in-out;
         }
-    </style>
 
+        .back-button {
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .back-button:hover {
+            background-color: #4e4dc8;
+            transform: scale(1.05);
+        }
+
+        .back-button svg {
+            margin-right: 8px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="controls">
+        <button class="back-button" onclick="goBack()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z"/>
+            </svg>
+        </button>
         <select id="filter">
             <option value="all">All Provinces</option>
         </select>
@@ -154,6 +174,10 @@
     </div>
 
     <script>
+        function goBack() {
+            window.location.href = 'dashboard.html'; 
+        }
+
         const width = 1000;
         const height = 700;
 
@@ -230,17 +254,15 @@
                 })
                 .on("mouseout", () => tooltip.style("opacity", 0))
                 .on("click", (event, d) => {
-                    // Zoom into the selected node
                     const transform = d3.zoomIdentity
                         .translate(width / 2, height / 2)
-                        .scale(4) // Adjust the zoom scale as needed
+                        .scale(4) 
                         .translate(-d.x, -d.y);
 
                     svg.transition()
                         .duration(750)
                         .call(zoom.transform, transform);
 
-                    // Display node data
                     tooltip.style("opacity", 1)
                         .html(`
                 <strong>Node:</strong> ${d.name}<br>
@@ -281,10 +303,9 @@
                     });
             }
 
-            // Populate the legend
             const legend = d3.select("#legend");
             distinctCases
-                .sort((a, b) => pastelColorScale(a).localeCompare(pastelColorScale(b))) // Sort by color
+                .sort((a, b) => pastelColorScale(a).localeCompare(pastelColorScale(b))) 
                 .forEach(caseName => {
                     const legendItem = legend.append("div").attr("class", "legend-item");
                     legendItem.append("div")
@@ -293,7 +314,6 @@
                     legendItem.append("span").text(caseName);
                 });
 
-            // Populate filter dropdown
             const provinces = Array.from(new Set(data.map(d => d.province).filter(Boolean))).sort();
             const filterSelect = d3.select("#filter");
             provinces.forEach(province => {
@@ -304,11 +324,9 @@
                 const selectedProvince = filterSelect.node().value;
 
                 if (selectedProvince === "all") {
-                    // Reset visibility for all nodes and links
                     node.style("opacity", 1);
                     link.style("opacity", 1);
                 } else {
-                    // Filter nodes and links by the selected province
                     const relatedNodes = new Set();
                     links.forEach(l => {
                         if (l.source.name === selectedProvince || l.target.name === selectedProvince) {
@@ -323,7 +341,6 @@
                     );
                 }
 
-                // Restart simulation to ensure smooth layout
                 simulation.alpha(0.3).restart();
             });
 
