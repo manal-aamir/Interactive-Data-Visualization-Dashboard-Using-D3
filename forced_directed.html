@@ -22,7 +22,7 @@
         .controls {
             background-color: #4f4b8c;
             padding: 10px 20px;
-            border-radius: 10px;
+            border-radius: 30px;
             margin: 10px 0;
             display: flex;
             gap: 15px;
@@ -34,7 +34,7 @@
             background-color: #6c63ff;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             padding: 10px 15px;
             font-size: 14px;
             transition: transform 0.2s ease, background-color 0.2s ease;
@@ -51,15 +51,23 @@
             gap: 20px;
             width: 95%;
             height: calc(100% - 90px);
+            border-radius: 30px;
+            /* Ensure layout edges are rounded */
+            overflow: hidden;
+            /* Prevent overflow beyond the border radius */
         }
 
         .legend-container {
             width: 25%;
+            height: 100%;
+            /* Match height with graph container */
             background-color: #f9f9f9;
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 30px;
+            /* Add rounded corners */
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             overflow-y: auto;
+            scroll-behavior: smooth;
         }
 
         .legend {
@@ -73,27 +81,38 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+        }
+
+        .legend-item:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            background-color: #f0f0f0;
         }
 
         .legend-color {
             width: 15px;
             height: 15px;
             border: 1px solid #ccc;
-            border-radius: 3px;
+            border-radius: 30px;
         }
 
         .graph-container {
             flex-grow: 1;
+            height: 100%;
+            /* Match height with legend container */
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             background-color: #f9f9f9;
-            border-radius: 15px;
+            border-radius: 30px;
+            /* Add rounded corners */
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .graph {
-            border-radius: 10px;
+            border-radius: 30px;
+            /* Match graph container rounding */
             width: 100%;
             height: 100%;
         }
@@ -113,6 +132,7 @@
             transition: opacity 0.2s ease-in-out;
         }
     </style>
+
 </head>
 
 <body>
@@ -171,12 +191,11 @@
             }));
 
             const simulation = d3.forceSimulation(nodes)
-                .force("link", d3.forceLink(links).id(d => d.name).distance(150)) // Increase link distance
-                .force("charge", d3.forceManyBody().strength(-30)) // Decrease repulsion
+                .force("link", d3.forceLink(links).id(d => d.name).distance(150))
+                .force("charge", d3.forceManyBody().strength(-30))
                 .force("center", d3.forceCenter(width / 2, height / 2))
-                .force("collision", d3.forceCollide(25)) // Increase collision radius
+                .force("collision", d3.forceCollide(25))
                 .on("tick", ticked);
-
 
             const svgGroup = svg.append("g");
 
@@ -199,16 +218,38 @@
                 .attr("fill", d => d.color)
                 .attr("stroke", "#333")
                 .attr("stroke-width", 0.5)
+                .style("filter", "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.3))")
                 .call(drag(simulation))
                 .on("mouseover", (event, d) => {
                     tooltip.style("opacity", 1).html(`
-                        <strong>Node:</strong> ${d.name}<br>
-                        <strong>${d.isProvince ? "Total Cases" : "Cases"}:</strong> ${d.case_count}
-                    `)
+            <strong>Node:</strong> ${d.name}<br>
+            <strong>${d.isProvince ? "Total Cases" : "Cases"}:</strong> ${d.case_count}
+        `)
                         .style("left", `${event.pageX + 10}px`)
                         .style("top", `${event.pageY + 10}px`);
                 })
-                .on("mouseout", () => tooltip.style("opacity", 0));
+                .on("mouseout", () => tooltip.style("opacity", 0))
+                .on("click", (event, d) => {
+                    // Zoom into the selected node
+                    const transform = d3.zoomIdentity
+                        .translate(width / 2, height / 2)
+                        .scale(4) // Adjust the zoom scale as needed
+                        .translate(-d.x, -d.y);
+
+                    svg.transition()
+                        .duration(750)
+                        .call(zoom.transform, transform);
+
+                    // Display node data
+                    tooltip.style("opacity", 1)
+                        .html(`
+                <strong>Node:</strong> ${d.name}<br>
+                <strong>${d.isProvince ? "Total Cases" : "Cases"}:</strong> ${d.case_count}
+            `)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY + 10}px`);
+                });
+
 
             function ticked() {
                 link
@@ -240,17 +281,20 @@
                     });
             }
 
+            // Populate the legend
             const legend = d3.select("#legend");
-            distinctCases.sort((a, b) => a.localeCompare(b));
-            distinctCases.forEach(caseName => {
-                const legendItem = legend.append("div").attr("class", "legend-item");
-                legendItem.append("div")
-                    .attr("class", "legend-color")
-                    .style("background-color", pastelColorScale(caseName));
-                legendItem.append("span").text(caseName);
-            });
+            distinctCases
+                .sort((a, b) => pastelColorScale(a).localeCompare(pastelColorScale(b))) // Sort by color
+                .forEach(caseName => {
+                    const legendItem = legend.append("div").attr("class", "legend-item");
+                    legendItem.append("div")
+                        .attr("class", "legend-color")
+                        .style("background-color", pastelColorScale(caseName));
+                    legendItem.append("span").text(caseName);
+                });
 
-            const provinces = Array.from(new Set(data.map(d => d.province).filter(Boolean)));
+            // Populate filter dropdown
+            const provinces = Array.from(new Set(data.map(d => d.province).filter(Boolean))).sort();
             const filterSelect = d3.select("#filter");
             provinces.forEach(province => {
                 filterSelect.append("option").attr("value", province).text(province);
@@ -260,9 +304,11 @@
                 const selectedProvince = filterSelect.node().value;
 
                 if (selectedProvince === "all") {
+                    // Reset visibility for all nodes and links
                     node.style("opacity", 1);
                     link.style("opacity", 1);
                 } else {
+                    // Filter nodes and links by the selected province
                     const relatedNodes = new Set();
                     links.forEach(l => {
                         if (l.source.name === selectedProvince || l.target.name === selectedProvince) {
@@ -276,6 +322,9 @@
                         (d.source.name === selectedProvince || d.target.name === selectedProvince) ? 1 : 0.2
                     );
                 }
+
+                // Restart simulation to ensure smooth layout
+                simulation.alpha(0.3).restart();
             });
 
             d3.select("#reset-zoom").on("click", () => {
@@ -295,7 +344,6 @@
             });
         }).catch(error => console.error("Error loading data:", error));
     </script>
-
 </body>
 
 </html>
