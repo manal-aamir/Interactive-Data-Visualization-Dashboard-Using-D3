@@ -7,44 +7,94 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <style>
-        .map {
-            border: 1px solid #ccc;
+        body {
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
-        .tooltip {
-            position: absolute;
-            text-align: center;
-            padding: 5px;
-            font-size: 12px;
-            background: lightgray;
-            border: 1px solid gray;
-            border-radius: 3px;
-            pointer-events: none;
-            opacity: 0;
-        }
+
         .controls {
-            margin: 20px;
+            background-color: #4f4b8c;
+            padding: 10px 20px;
+            border-radius: 30px;
+            margin: 10px 0;
+            display: flex;
+            gap: 15px;
+            color: white;
         }
-        .dropdown {
-            margin-right: 10px;
+
+        button,
+        select {
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 15px;
+            font-size: 14px;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        button:hover,
+        select:hover {
+            background-color: #4e4dc8;
+            transform: scale(1.05);
+        }
+
+        .chart-container {
+            flex-grow: 1;
+            height: 100%;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            background-color: #f9f9f9;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        svg {
+            border-radius: 30px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tooltip {
+            font-family: 'Roboto', sans-serif;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            color: #333;
+            font-size: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+            transition: opacity 0.2s ease-in-out;
         }
     </style>
 </head>
 <body>
     <div class="controls">
-        <label for="sex-filter" class="dropdown">Filter by Sex:</label>
+        <label for="sex-filter">Filter by Sex:</label>
         <select id="sex-filter">
             <option value="all">All</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
         </select>
-        <label for="age-filter" class="dropdown">Filter by Age Group:</label>
+        <label for="age-filter">Filter by Age Group:</label>
         <select id="age-filter">
             <option value="all">All</option>
             <option value="20s">20s</option>
             <option value="30s">30s</option>
             <option value="50s">50s</option>
         </select>
-        <label for="infection-filter" class="dropdown">Filter by Infection Case:</label>
+        <label for="infection-filter">Filter by Infection Case:</label>
         <select id="infection-filter">
             <option value="all">All</option>
         </select>
@@ -70,11 +120,11 @@
         const ageDropdown = d3.select("#age-filter");
         const infectionDropdown = d3.select("#infection-filter");
 
-        let patients = []; 
+        let patients = [];
 
         Promise.all([
             d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"),
-            d3.csv("PatientInfo.csv")
+            d3.csv("PatientInfo.csv") // Replace with your CSV path
         ]).then(([world, csvData]) => {
             const countries = topojson.feature(world, world.objects.countries);
 
@@ -183,6 +233,9 @@
                 })
                 .on("mouseout", () => {
                     tooltip.transition().duration(200).style("opacity", 0);
+                })
+                .on("click", (event, d) => {
+                    alert(`Details for Patient ID: ${d.patient_id}\nCity: ${d.city}\nAge Group: ${d.ageGroup}`);
                 });
 
             pins.exit().remove();
