@@ -281,36 +281,68 @@
                         const i = d3.interpolate(d.current, d.target);
                         return t => d.current = i(t);
                     })
-                    .attr("fill-opacity", d => arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
-                    .attr("pointer-events", d => arcVisible(d.target) ? "auto" : "none")
-                    .attrTween("d", d => () => arc(d.current));
-
-                label.filter(function (d) {
-                    return +this.getAttribute("fill-opacity") || labelVisible(d.target);
-                }).transition(t)
-                    .attr("fill-opacity", d => +labelVisible(d.target))
-                    .attrTween("transform", d => () => labelTransform(d.current));
+                    .on("drag", (event, d) => {
+                        d.fx = event.x;
+                        d.fy = event.y;
+                    })
+                    .on("end", (event, d) => {
+                        if (!event.active) simulation.alphaTarget(0);
+                        d.fx = null;
+                        d.fy = null;
+                    });
             }
 
-            function arcVisible(d) {
-                return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
-            }
+            // Populate the legend
+            const legend = d3.select("#legend");
+            distinctCases
+                .sort((a, b) => pastelColorScale(a).localeCompare(pastelColorScale(b))) // Sort by color
+                .forEach(caseName => {
+                    const legendItem = legend.append("div").attr("class", "legend-item");
+                    legendItem.append("div")
+                        .attr("class", "legend-color")
+                        .style("background-color", pastelColorScale(caseName));
+                    legendItem.append("span").text(caseName);
+                });
 
-            function labelVisible(d) {
-                return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
-            }
+            // Populate filter dropdown
+            const provinces = Array.from(new Set(data.map(d => d.province).filter(Boolean))).sort();
+            const filterSelect = d3.select("#filter");
+            provinces.forEach(province => {
+                filterSelect.append("option").attr("value", province).text(province);
+            });
 
-            function labelTransform(d) {
-                const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
-                const y = (d.y0 + d.y1) / 2 * radius;
-                return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
-            }
-        }
+            filterSelect.on("change", () => {
+                const selectedProvince = filterSelect.node().value;
 
-        // Reset Zoom
-        d3.select("#reset-btn").on("click", () => {
-            svg.transition().duration(750).attr("transform", "translate(0,0) scale(1)");
-        });
+                if (selectedProvince === "all") {
+                    // Reset visibility for all nodes and links
+                    node.style("opacity", 1);
+                    link.style("opacity", 1);
+                } else {
+                    // Filter nodes and links by the selected province
+                    const relatedNodes = new Set();
+                    links.forEach(l => {
+                        if (l.source.name === selectedProvince || l.target.name === selectedProvince) {
+                            relatedNodes.add(l.source.name);
+                            relatedNodes.add(l.target.name);
+                        }
+                    });
+
+                    node.style("opacity", d => (relatedNodes.has(d.name) ? 1 : 0.2));
+                    link.style("opacity", d =>
+                        (d.source.name === selectedProvince || d.target.name === selectedProvince) ? 1 : 0.2
+                    );
+                }
+
+                // Restart simulation to ensure smooth layout
+                simulation.alpha(0.3).restart();
+            });
+
+            d3.select("#reset-zoom").on("click", () => {
+                svg.transition()
+                    .duration(750)
+                    .call(zoom.transform, d3.zoomIdentity);
+            });
 
         // Export as SVG
         d3.select("#export-btn").on("click", () => {
