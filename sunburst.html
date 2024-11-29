@@ -1,84 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Sunburst Chart with Filtering</title>
+    <title>Enhanced Sunburst Chart</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1e1e1e;
-            color: white;
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            color: #333;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
+        }
+
+        .controls {
+            background-color: #4f4b8c;
+            padding: 10px 20px;
+            border-radius: 30px;
+            margin: 10px 0;
+            display: flex;
+            gap: 15px;
+            color: white;
+        }
+
+        button,
+        select {
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 15px;
+            font-size: 14px;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        button:hover,
+        select:hover {
+            background-color: #4e4dc8;
+            transform: scale(1.05);
+        }
+
+        .layout {
+            display: flex;
+            gap: 20px;
+            width: 95%;
+            height: calc(100% - 90px);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .legend-container {
+            width: 25%;
+            height: 100%;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 30px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             overflow-y: auto;
         }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-        svg {
-            font-size: 8px;
-            margin-bottom: 20px;
-        }
-        .tooltip {
-            position: absolute;
-            text-align: center;
-            padding: 5px;
-            font-size: 10px;
-            background: lightgray;
-            border: 1px solid gray;
-            border-radius: 3px;
-            pointer-events: none;
-            opacity: 0;
-        }
+
         .legend {
-            font-size: 10px;
-            margin: 10px;
+            font-size: 12px;
             display: flex;
             flex-direction: column;
-            max-height: 300px;
-            overflow-y: auto;
+            gap: 10px;
         }
+
         .legend-item {
             display: flex;
             align-items: center;
-            margin-bottom: 5px;
-        }
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            margin-right: 5px;
-            border: 1px solid #ccc;
-        }
-        .controls {
-            margin-bottom: 15px;
-            display: flex;
             gap: 10px;
-        }
-        button, select {
-            padding: 5px 10px;
-            background-color: #555;
-            color: white;
-            border: none;
             cursor: pointer;
         }
-        button:hover, select:hover {
-            background-color: #777;
+
+        .legend-item:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            background-color: #f0f0f0;
         }
-        select {
-            color: black;
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border: 1px solid #ccc;
+            border-radius: 30px;
+        }
+
+        .chart-container {
+            flex-grow: 1;
+            height: 100%;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            background-color: #f9f9f9;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        svg {
+            border-radius: 30px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tooltip {
+            font-family: 'Roboto', sans-serif;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            color: #333;
             font-size: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+            transition: opacity 0.2s ease-in-out;
         }
     </style>
 </head>
+
 <body>
     <div class="controls">
         <button id="reset-btn">Reset Zoom</button>
@@ -88,26 +135,29 @@
             <option value="all">All</option>
         </select>
     </div>
-    <div class="container">
-        <div class="tooltip" id="tooltip"></div>
-        <svg width="900" height="900"></svg>
-        <div class="legend" id="legend"></div>
+    <div class="layout">
+        <div class="legend-container">
+            <div class="legend" id="legend"></div>
+        </div>
+        <div class="chart-container">
+            <svg></svg>
+            <div class="tooltip" id="tooltip"></div>
+        </div>
     </div>
     <script>
-        const width = 900;
-        const radius = width / 2;
-        const colorScheme = [
-            "#9b59b6", "#8e44ad", "#d980fa", "#6c5ce7", "#74b9ff",
-            "#00cec9", "#fab1a0", "#fdcb6e", "#e17055", "#00b894"
-        ];
-        const color = d3.scaleOrdinal(colorScheme);
+        const width = 600; // Chart width
+        const height = 600; // Chart height
+        const radius = Math.min(width, height) / 6; // Radius based on the smallest dimension
 
         const svg = d3.select("svg")
-            .attr("viewBox", [-radius, -radius, width, width])
-            .append("g");
+            .attr("viewBox", `${-width / 2} ${-height / 2} ${width} ${height}`) // Center the chart
+            .style("font", "10px sans-serif")
+            .style("width", "100%") // Responsive width
+            .style("height", "100%"); // Responsive height
 
         const tooltip = d3.select("#tooltip");
         const filterSelect = d3.select("#filter-select");
+        const legend = d3.select("#legend");
         let rootData;
 
         function buildHierarchy(data) {
@@ -138,7 +188,7 @@
             return root;
         }
 
-        d3.csv("PatientInfo.csv").then(data => {
+        d3.csv("Updated_PatientInfo.csv").then(data => {
             rootData = d3.hierarchy(buildHierarchy(data))
                 .sum(d => d.value);
 
@@ -164,65 +214,128 @@
         function drawSunburst(hierarchy) {
             svg.selectAll("*").remove();
 
-            const partition = d3.partition().size([2 * Math.PI, radius]);
+            const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, hierarchy.children.length + 1));
 
+            const partition = d3.partition().size([2 * Math.PI, hierarchy.height + 1]);
             const root = partition(hierarchy);
+            root.each(d => d.current = d);
 
             const arc = d3.arc()
                 .startAngle(d => d.x0)
                 .endAngle(d => d.x1)
-                .innerRadius(d => d.y0)
-                .outerRadius(d => d.y1);
+                .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
+                .padRadius(radius * 1.5)
+                .innerRadius(d => d.y0 * radius)
+                .outerRadius(d => Math.max(d.y0 * radius, d.y1 * radius - 1));
 
-            const path = svg.selectAll("path")
-                .data(root.descendants())
-                .enter().append("path")
-                .attr("fill", d => color((d.children ? d : d.parent).data.name))
-                .attr("d", arc)
+            const path = svg.append("g")
+                .selectAll("path")
+                .data(root.descendants().slice(1))
+                .join("path")
+                .attr("fill", d => { while (d.depth > 1) d = d.parent; return color(d.data.name); })
+                .attr("fill-opacity", d => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
+                .attr("pointer-events", d => arcVisible(d.current) ? "auto" : "none")
+                .attr("d", d => arc(d.current))
                 .on("mouseover", (event, d) => {
-                    tooltip.style("opacity", 0.9)
+                    tooltip.style("opacity", 1)
                         .html(`<strong>${d.data.name}</strong><br>Value: ${d.value || 0}`)
                         .style("left", `${event.pageX + 10}px`)
                         .style("top", `${event.pageY + 10}px`);
                 })
                 .on("mouseout", () => tooltip.style("opacity", 0))
-                .on("click", (event, d) => zoomToNode(d));
+                .on("click", (event, d) => clicked(d));
 
-            svg.selectAll("text")
-                .data(root.descendants().filter(d => d.x1 - d.x0 > 0.03))
-                .enter().append("text")
-                .attr("transform", d => `
-                    rotate(${(d.x0 + d.x1) / 2 * 180 / Math.PI - 90})
-                    translate(${(d.y0 + d.y1) / 2},0)
-                    rotate(${d.x1 - d.x0 > Math.PI ? 180 : 0})
-                `)
+            const label = svg.append("g")
+                .attr("pointer-events", "none")
                 .attr("text-anchor", "middle")
-                .text(d => d.data.name)
-                .attr("font-size", "8px")
-                .attr("fill", "white");
+                .style("user-select", "none")
+                .selectAll("text")
+                .data(root.descendants().slice(1))
+                .join("text")
+                .attr("dy", "0.35em")
+                .attr("fill-opacity", d => +labelVisible(d.current))
+                .attr("transform", d => labelTransform(d.current))
+                .text(d => d.data.name);
 
-            d3.select("#reset-btn").on("click", () => {
-                svg.transition().duration(750).attr("transform", "translate(0,0) scale(1)");
-            });
+            const parent = svg.append("circle")
+                .datum(root)
+                .attr("r", radius)
+                .attr("fill", "none")
+                .attr("pointer-events", "all")
+                .on("click", clicked);
 
-            d3.select("#export-btn").on("click", () => {
-                const svgData = new XMLSerializer().serializeToString(document.querySelector("svg"));
-                const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "sunburst_chart.svg";
-                link.click();
-            });
+            function clicked(p) {
+                parent.datum(p.parent || root);
+
+                root.each(d => d.target = {
+                    x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+                    x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+                    y0: Math.max(0, d.y0 - p.depth),
+                    y1: Math.max(0, d.y1 - p.depth)
+                });
+
+                const t = svg.transition().duration(750);
+
+                path.transition(t)
+                    .tween("data", d => {
+                        const i = d3.interpolate(d.current, d.target);
+                        return t => d.current = i(t);
+                    })
+                    .attr("fill-opacity", d => arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
+                    .attr("pointer-events", d => arcVisible(d.target) ? "auto" : "none")
+                    .attrTween("d", d => () => arc(d.current));
+
+                label.filter(function (d) {
+                    return +this.getAttribute("fill-opacity") || labelVisible(d.target);
+                }).transition(t)
+                    .attr("fill-opacity", d => +labelVisible(d.target))
+                    .attrTween("transform", d => () => labelTransform(d.current));
+            }
+
+            function arcVisible(d) {
+                return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
+            }
+
+            function labelVisible(d) {
+                return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
+            }
+
+            function labelTransform(d) {
+                const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+                const y = (d.y0 + d.y1) / 2 * radius;
+                return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
+            }
         }
 
-        function zoomToNode(node) {
-            const scale = radius / (node.y1 - node.y0);
-            const translateX = -(node.x0 + (node.x1 - node.x0) / 2) * scale;
-            const translateY = -node.y0 * scale;
+        // Reset Zoom
+        d3.select("#reset-btn").on("click", () => {
+            svg.transition().duration(750).attr("transform", "translate(0,0) scale(1)");
+        });
 
-            svg.transition().duration(750).attr("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
-        }
+        // Export as SVG
+        d3.select("#export-btn").on("click", () => {
+            const svgData = new XMLSerializer().serializeToString(document.querySelector("svg"));
+            const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "sunburst_chart.svg";
+            link.click();
+        });
+
+        d3.csv("Updated_PatientInfo.csv").then(data => {
+            const distinctCases = Array.from(new Set(data.map(d => d.infection_case).filter(Boolean)));
+            const pastelColors = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, distinctCases.length));
+
+            distinctCases.forEach(caseName => {
+                const legendItem = legend.append("div").attr("class", "legend-item");
+                legendItem.append("div")
+                    .attr("class", "legend-color")
+                    .style("background-color", pastelColors(caseName));
+                legendItem.append("span").text(caseName);
+            });
+        });
     </script>
 </body>
+
 </html>
