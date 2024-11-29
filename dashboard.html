@@ -4,18 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Dashboard</title>
+    <title>Dashboard</title>
     <style>
-        /* Body Styling */
         body {
             background: linear-gradient(135deg, #f0f8ff, #c8dfff);
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevent scrolling during loading */
         }
 
-        /* Loading Screen */
         #loading-screen {
             position: fixed;
             top: 0;
@@ -33,7 +30,6 @@
             font-weight: bold;
         }
 
-        /* Spinner */
         .spinner {
             width: 60px;
             height: 60px;
@@ -53,7 +49,6 @@
             }
         }
 
-        /* Loading Bar */
         .loading-bar-container {
             width: 80%;
             max-width: 400px;
@@ -76,16 +71,16 @@
             }
         }
 
-        /* Dashboard */
         #dashboard {
-            display: none; /* Hidden initially */
+            display: none; 
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            overflow-y: auto; 
+            height: 100vh; 
             color: #333;
         }
 
-        /* Dashboard Header */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -108,17 +103,16 @@
             margin-top: 10px;
         }
 
-        /* Dashboard Layout */
         .layout {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Adjust layout for wider view */
-            grid-gap: 30px;
-            width: 90%; /* Make layout wider */
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 20px;
+            justify-content: center; 
+            width: 90%;
             max-width: 1600px;
             margin: 0 auto;
         }
 
-        /* Card Styling */
         .card {
             position: relative;
             background: white;
@@ -128,7 +122,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 600px; /* Increased height */
+            width: 600px; 
+            height: 400px; 
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -137,7 +132,6 @@
             box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
         }
 
-        /* Overlay for Click to View */
         .card .overlay {
             position: absolute;
             top: 0;
@@ -169,21 +163,20 @@
             z-index: 1;
         }
 
-        /* Responsive Design */
         @media screen and (max-width: 1024px) {
             .layout {
-                grid-template-columns: 1fr; /* Stack charts vertically for smaller screens */
+                grid-template-columns: 1fr; 
             }
 
             .card {
-                height: 500px; /* Reduce height for smaller screens */
+                width: 90%; 
+                height: 250px; 
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="spinner"></div>
         <div class="loading-bar-container">
@@ -192,15 +185,12 @@
         <p>Loading Dashboard...</p>
     </div>
 
-    <!-- Dashboard -->
     <div id="dashboard">
-        <!-- Dashboard Header -->
         <div class="header">
-            <h1>Data Visualization Dashboard</h1>
+            <h2>Data Visualization Dashboard</h2>
             <p>Explore insightful visualizations in a clean and modern interface</p>
         </div>
 
-        <!-- Dashboard Layout -->
         <div class="layout">
             <div class="card">
                 <div class="overlay" onclick="navigateTo('TreeMap.html')">Click Here to View</div>
@@ -222,19 +212,18 @@
     </div>
 
     <script>
-        // Simulate loading
         window.addEventListener('load', () => {
             const loadingScreen = document.getElementById('loading-screen');
             const dashboard = document.getElementById('dashboard');
             
             setTimeout(() => {
-                loadingScreen.style.display = 'none'; // Hide the loading screen
-                dashboard.style.display = 'flex'; // Show the dashboard
-            }, 3000); // Simulated loading time (3 seconds)
+                loadingScreen.style.display = 'none'; 
+                dashboard.style.display = 'flex'; 
+            }, 3000); 
         });
 
         function navigateTo(url) {
-            window.location.href = url; // Redirect to the iframe source
+            window.location.href = url; 
         }
     </script>
 </body>
