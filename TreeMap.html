@@ -19,6 +19,48 @@
             overflow: hidden;
         }
 
+        .breadcrumb {
+            margin: 10px auto; 
+            padding: 10px 15px;
+            font-size: 14px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+        }
+
+
+        .layout {
+            display: flex;
+            gap: 20px;
+            width: 90%;
+            height: 70vh; 
+            border-radius: 30px;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .breadcrumb a {
+            color: #6c63ff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #4e4dc8;
+        }
+
+        .breadcrumb span {
+            color: #333;
+            font-weight: bold;
+        }
+
         .controls {
             background-color: #4f4b8c;
             padding: 10px 20px;
@@ -34,7 +76,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 1px; 
+            margin-top: 1px;
         }
 
         button,
@@ -43,7 +85,7 @@
             color: white;
             border: none;
             border-radius: 30px;
-            padding: 5px 10px; 
+            padding: 5px 10px;
             font-size: 12px;
             transition: transform 0.2s ease, background-color 0.2s ease;
         }
@@ -52,17 +94,6 @@
         select:hover {
             background-color: #4e4dc8;
             transform: scale(1.05);
-        }
-
-        .layout {
-            display: flex;
-            gap: 20px;
-            width: 90%;
-            height: calc(100% - 90px);
-            border-radius: 30px;
-            overflow: hidden;
-            justify-content: center;
-            align-items: center;
         }
 
         .legend-container {
@@ -135,37 +166,15 @@
             pointer-events: none;
             transition: opacity 0.2s ease-in-out;
         }
-
-        .back-button {
-            background-color: #6c63ff;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 5px 10px; 
-            font-size: 12px; 
-            cursor: pointer;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-        }
-
-        .back-button:hover {
-            background-color: #4e4dc8;
-            transform: scale(1.05);
-        }
-
-        .back-button svg {
-            margin-right: 8px;
-        }
     </style>
 </head>
 
 <body>
+    <!-- Breadcrumb Navigation -->
     <div class="controls">
         <button class="back-button" onclick="goBack()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z"/>
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z" />
             </svg>
         </button>
         <label for="filter-type">Filter by Type:</label>
@@ -175,18 +184,25 @@
         <button id="reset-zoom">Reset Zoom</button>
         <button id="save-image">Save as Image</button>
     </div>
+
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb">
+        <a href="dashboard.html">Dashboard</a> &gt;
+        <span>Treemap Visualization</span>
+    </div>
+
     <div class="layout">
         <div class="legend-container">
             <div class="legend" id="legend"></div>
         </div>
         <div class="graph-container">
             <svg id="treemap-svg" class="graph"></svg>
-            <div class="tooltip" id="tooltip"></div>
+        <div class="tooltip" id="tooltip"></div>
         </div>
     </div>
     <script>
         function goBack() {
-            window.location.href = 'dashboard.html'; 
+            window.location.href = "dashboard.html";
         }
 
         const width = 1500;
