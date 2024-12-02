@@ -123,6 +123,30 @@
             pointer-events: none;
             transition: opacity 0.2s ease-in-out;
         }
+        .breadcrumb {
+        margin: 10px 0;
+        padding: 10px 15px;
+        font-size: 14px;
+        background-color: #f8f9fa;
+        border-radius: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .breadcrumb a {
+            color: #6c63ff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #4e4dc8;
+        }
+
+        .breadcrumb span {
+            color: #333;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -130,11 +154,16 @@
     <div class="controls">
         <button id="reset-btn">Reset Zoom</button>
         <button id="export-btn">Export as SVG</button>
-        <label for="filter-select">Filter by Province:</label>
+        <label for="filter-select" style="margin-top: 10px;">Filter by Province:</label>
         <select id="filter-select">
             <option value="all">All</option>
         </select>
     </div>
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb">
+        <a href="dashboard.html">Dashboard</a> &gt; 
+        <span>Timeline</span>
+   </div>
     <div class="layout">
         <div class="legend-container">
             <div class="legend" id="legend"></div>
