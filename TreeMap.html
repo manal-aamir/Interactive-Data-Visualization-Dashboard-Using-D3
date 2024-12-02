@@ -1,348 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Treemap Visualization</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        body {
-            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
-            color: #333;
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+      body 
+      {
+        background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+        color: #333;
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
 
-        .breadcrumb {
-            margin: 10px auto; 
-            padding: 10px 15px;
-            font-size: 14px;
-            background-color: #f8f9fa;
-            border-radius: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: fit-content;
-        }
+      .breadcrumb 
+      {
+        margin: 10px auto;
+        padding: 10px 15px;
+        font-size: 14px;
+        background-color: #f8f9fa;
+        border-radius: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+      }
 
+      .layout 
+      {
+        display: flex;
+        gap: 20px;
+        width: 90%;
+        height: 70vh;
+        border-radius: 30px;
+        overflow: hidden;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .layout {
-            display: flex;
-            gap: 20px;
-            width: 90%;
-            height: 70vh; 
-            border-radius: 30px;
-            overflow: hidden;
-            justify-content: center;
-            align-items: center;
-        }
+      .breadcrumb a 
+      {
+        color: #6c63ff;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.2s ease;
+      }
 
+      .breadcrumb a:hover 
+      {
+        color: #4e4dc8;
+      }
 
-        .breadcrumb a {
-            color: #6c63ff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.2s ease;
-        }
+      .breadcrumb span 
+      {
+        color: #333;
+        font-weight: bold;
+      }
 
-        .breadcrumb a:hover {
-            color: #4e4dc8;
-        }
+      .controls 
+      {
+        background-color: #4f4b8c;
+        padding: 10px 20px;
+        border-radius: 30px;
+        margin: 10px 0;
+        display: flex;
+        gap: 15px;
+        color: white;
+        align-items: center;
+      }
 
-        .breadcrumb span {
-            color: #333;
-            font-weight: bold;
-        }
+      label 
+      {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+      }
 
-        .controls {
-            background-color: #4f4b8c;
-            padding: 10px 20px;
-            border-radius: 30px;
-            margin: 10px 0;
-            display: flex;
-            gap: 15px;
-            color: white;
-            align-items: center;
-        }
+      button,
+      select 
+      {
+        background-color: #6c63ff;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 5px 10px;
+        font-size: 12px;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+      }
 
-        label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1px;
-        }
+      button:hover,
+      select:hover 
+      {
+        background-color: #4e4dc8;
+        transform: scale(1.05);
+      }
 
-        button,
-        select {
-            background-color: #6c63ff;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 5px 10px;
-            font-size: 12px;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
+      .legend-container 
+      {
+        width: 20%;
+        height: 90%;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 30px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        overflow-y: auto;
+        scroll-behavior: smooth;
+      }
 
-        button:hover,
-        select:hover {
-            background-color: #4e4dc8;
-            transform: scale(1.05);
-        }
+      .legend 
+      {
+        font-size: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
 
-        .legend-container {
-            width: 20%;
-            height: 90%;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 30px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
+      .legend-item 
+      {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
 
-        .legend {
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+      .legend-item:hover 
+      {
+        transform: scale(1.05);
+        transition: transform 0.2s ease, background-color 0.2s ease;
+        background-color: #f0f0f0;
+      }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
+      .legend-color 
+      {
+        width: 20px;
+        height: 20px;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+      }
 
-        .legend-item:hover {
-            transform: scale(1.05);
-            transition: transform 0.2s ease, background-color 0.2s ease;
-            background-color: #f0f0f0;
-        }
+      .graph-container 
+      {
+        flex-grow: 1;
+        height: 95%;
+        width: 75%;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        background-color: #f9f9f9;
+        border-radius: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border: 1px solid #ccc;
-            border-radius: 50%;
-        }
+      .graph 
+      {
+        border-radius: 30px;
+        width: 90%;
+        height: 90%;
+      }
 
-        .graph-container {
-            flex-grow: 1;
-            height: 95%;
-            width: 75%;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            background-color: #f9f9f9;
-            border-radius: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .graph {
-            border-radius: 30px;
-            width: 90%;
-            height: 90%;
-        }
-
-        .tooltip {
-            font-family: 'Roboto', sans-serif;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            color: #333;
-            font-size: 12px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            position: absolute;
-            pointer-events: none;
-            transition: opacity 0.2s ease-in-out;
-        }
+      .tooltip 
+      {
+        font-family: "Roboto", sans-serif;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        color: #333;
+        font-size: 12px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+        transition: opacity 0.2s ease-in-out;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-    <!-- Breadcrumb Navigation -->
+  <body>
     <div class="controls">
-        <button class="back-button" onclick="goBack()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z" />
-            </svg>
-        </button>
-        <label for="filter-type">Filter by Type:</label>
-        <select id="filter-type">
-            <option value="all">All</option>
-        </select>
-        <button id="reset-zoom">Reset Zoom</button>
-        <button id="save-image">Save as Image</button>
+      <button class="back-button" onclick="goBack()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-arrow-left"
+          viewBox="0 0 16 16"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z"
+          />
+        </svg>
+
+      </button>
+      <label for="filter-type">Filter by Type:</label>
+      <select id="filter-type">
+        <option value="all">All</option>
+      </select>
+      <button id="reset-zoom">Reset Zoom</button>
+      <button id="save-image">Save as Image</button>
     </div>
 
     <!-- Breadcrumb Navigation -->
     <div class="breadcrumb">
-        <a href="dashboard.html">Dashboard</a> &gt;
-        <span>Treemap Visualization</span>
+      <a href="dashboard.html">Dashboard</a> &gt;
+      <span>Treemap Visualization</span>
     </div>
 
     <div class="layout">
-        <div class="legend-container">
-            <div class="legend" id="legend"></div>
-        </div>
-        <div class="graph-container">
-            <svg id="treemap-svg" class="graph"></svg>
+      <div class="legend-container">
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="graph-container">
+        <svg id="treemap-svg" class="graph"></svg>
         <div class="tooltip" id="tooltip"></div>
-        </div>
+      </div>
     </div>
+    
     <script>
-        function goBack() {
-            window.location.href = "dashboard.html";
-        }
+      function goBack() {
+        window.location.href = "dashboard.html";
+      }
 
-        const width = 1500;
-        const height = 1200;
-        const colorScheme = ["#4f90a6", "#faa476", "#f0746e", "#e34f6f", "#dc3977", "#b9257a", "#7c1d6f",
-            "#9b59b6", "#8e44ad", "#d980fa", "#6c5ce7",
-            "#74b9ff", "#00cec9", "#fab1a0", "#fdcb6e",
-            "#e17055", "#00b894"
-        ];
-        const colorScale = d3.scaleOrdinal(colorScheme);
+      const width = 1500;
+      const height = 1200;
+      const colorScheme = [
+        "#4f90a6",
+        "#faa476",
+        "#f0746e",
+        "#e34f6f",
+        "#dc3977",
+        "#b9257a",
+        "#7c1d6f",
+        "#9b59b6",
+        "#8e44ad",
+        "#d980fa",
+        "#6c5ce7",
+        "#74b9ff",
+        "#00cec9",
+        "#fab1a0",
+        "#fdcb6e",
+        "#e17055",
+        "#00b894",
+      ];
+      const colorScale = d3.scaleOrdinal(colorScheme);
 
-        const svg = d3.select("#treemap-svg")
-            .attr("viewBox", [0, 0, width, height])
-            .append("g");
+      const svg = d3
+        .select("#treemap-svg")
+        .attr("viewBox", [0, 0, width, height])
+        .append("g");
 
-        const tooltip = d3.select("#tooltip");
+      const tooltip = d3.select("#tooltip");
 
-        function buildHierarchy(data) {
-            const root = { name: "Root", children: [] };
-            data.forEach(d => {
-                let country = root.children.find(c => c.name === d.country);
-                if (!country) {
-                    country = { name: d.country, children: [] };
-                    root.children.push(country);
-                }
-                let province = country.children.find(p => p.name === d.province);
-                if (!province) {
-                    province = { name: d.province, children: [] };
-                    country.children.push(province);
-                }
-                let infectionCase = province.children.find(i => i.name === d.infection_case);
-                if (!infectionCase) {
-                    infectionCase = { name: d.infection_case, value: +d.contact_number || 1 };
-                    province.children.push(infectionCase);
-                }
-            });
-            return root;
-        }
-
-        d3.csv("Updated_PatientInfo.csv").then(data => {
-            const hierarchy = d3.hierarchy(buildHierarchy(data))
-                .sum(d => d.value)
-                .sort((a, b) => b.value - a.value);
-
-            const treemapLayout = d3.treemap()
-                .size([width, height])
-                .padding(1);
-
-            treemapLayout(hierarchy);
-
-            const nodes = svg.selectAll("g")
-                .data(hierarchy.descendants())
-                .enter()
-                .append("g")
-                .attr("transform", d => `translate(${d.x0}, ${d.y0})`);
-
-            const rects = nodes.append("rect")
-                .attr("width", d => d.x1 - d.x0)
-                .attr("height", d => d.y1 - d.y0)
-                .attr("fill", d => colorScale(d.data.name))
-                .attr("stroke", "#fff")
-                .on("mouseover", (event, d) => {
-                    tooltip.style("opacity", 1)
-                        .html(`<strong>${d.data.name}</strong><br>Value: ${d.value || 0}`)
-                        .style("left", `${event.pageX + 10}px`)
-                        .style("top", `${event.pageY + 10}px`);
-                })
-                .on("mouseout", () => tooltip.style("opacity", 0))
-                .on("click", (event, d) => zoomToNode(d));
-
-            const labels = nodes.append("text")
-                .attr("dx", 4)
-                .attr("dy", 14)
-                .text(d => d.data.name)
-                .attr("font-size", "8px")
-                .attr("fill", "white")
-                .attr("opacity", d => (d.x1 - d.x0 > 50 && d.y1 - d.y0 > 20) ? 1 : 0);
-
-            const zoomToNode = (focusNode) => {
-                const xScale = width / (focusNode.x1 - focusNode.x0),
-                    yScale = height / (focusNode.y1 - focusNode.y0),
-                    scale = Math.min(xScale, yScale),
-                    translateX = -focusNode.x0 * scale,
-                    translateY = -focusNode.y0 * scale;
-
-                svg.transition().duration(750).attr(
-                    "transform",
-                    `translate(${translateX}, ${translateY}) scale(${scale})`
-                );
-
-                labels.transition().duration(750)
-                    .attr("opacity", d => (focusNode === d || focusNode.ancestors().includes(d)) ? 1 : 0);
+      function buildHierarchy(data) {
+        const root = { name: "Root", children: [] };
+        data.forEach((d) => {
+          let country = root.children.find((c) => c.name === d.country);
+          if (!country) {
+            country = { name: d.country, children: [] };
+            root.children.push(country);
+          }
+          let province = country.children.find((p) => p.name === d.province);
+          if (!province) {
+            province = { name: d.province, children: [] };
+            country.children.push(province);
+          }
+          let infectionCase = province.children.find(
+            (i) => i.name === d.infection_case
+          );
+          if (!infectionCase) {
+            infectionCase = {
+              name: d.infection_case,
+              value: +d.contact_number || 1,
             };
+            province.children.push(infectionCase);
+          }
+        });
+        return root;
+      }
 
-            d3.select("#reset-zoom").on("click", () => {
-                svg.transition().duration(750).attr("transform", null);
-                labels.transition().duration(750)
-                    .attr("opacity", d => (d.x1 - d.x0 > 50 && d.y1 - d.y0 > 20) ? 1 : 0);
+      d3.csv("Updated_PatientInfo.csv")
+        .then((data) => {
+          const hierarchy = d3
+            .hierarchy(buildHierarchy(data))
+            .sum((d) => d.value)
+            .sort((a, b) => b.value - a.value);
+
+          const treemapLayout = d3.treemap().size([width, height]).padding(1);
+
+          treemapLayout(hierarchy);
+
+          const nodes = svg
+            .selectAll("g")
+            .data(hierarchy.descendants())
+            .enter()
+            .append("g")
+            .attr("transform", (d) => `translate(${d.x0}, ${d.y0})`);
+
+          const rects = nodes
+            .append("rect")
+            .attr("width", (d) => d.x1 - d.x0)
+            .attr("height", (d) => d.y1 - d.y0)
+            .attr("fill", (d) => colorScale(d.data.name))
+            .attr("stroke", "#fff")
+            .on("mouseover", (event, d) => {
+              tooltip
+                .style("opacity", 1)
+                .html(
+                  `<strong>${d.data.name}</strong><br>Value: ${d.value || 0}`
+                )
+                .style("left", `${event.pageX + 10}px`)
+                .style("top", `${event.pageY + 10}px`);
+            })
+            .on("mouseout", () => tooltip.style("opacity", 0))
+            .on("click", (event, d) => zoomToNode(d));
+
+          const labels = nodes
+            .append("text")
+            .attr("dx", 4)
+            .attr("dy", 14)
+            .text((d) => d.data.name)
+            .attr("font-size", "8px")
+            .attr("fill", "white")
+            .attr("opacity", (d) =>
+              d.x1 - d.x0 > 50 && d.y1 - d.y0 > 20 ? 1 : 0
+            );
+
+          const zoomToNode = (focusNode) => {
+            const xScale = width / (focusNode.x1 - focusNode.x0),
+              yScale = height / (focusNode.y1 - focusNode.y0),
+              scale = Math.min(xScale, yScale),
+              translateX = -focusNode.x0 * scale,
+              translateY = -focusNode.y0 * scale;
+
+            svg
+              .transition()
+              .duration(750)
+              .attr(
+                "transform",
+                `translate(${translateX}, ${translateY}) scale(${scale})`
+              );
+
+            labels
+              .transition()
+              .duration(750)
+              .attr("opacity", (d) =>
+                focusNode === d || focusNode.ancestors().includes(d) ? 1 : 0
+              );
+          };
+
+          d3.select("#reset-zoom").on("click", () => {
+            svg.transition().duration(750).attr("transform", null);
+            labels
+              .transition()
+              .duration(750)
+              .attr("opacity", (d) =>
+                d.x1 - d.x0 > 50 && d.y1 - d.y0 > 20 ? 1 : 0
+              );
+          });
+
+          const legendItems = [
+            ...new Set(hierarchy.leaves().map((d) => d.data.name)),
+          ]
+            .map((name) => ({
+              name: name,
+              color: colorScale(name),
+            }))
+            .sort((a, b) => d3.ascending(a.color, b.color));
+
+          legendItems.forEach((item) => {
+            const legendItem = d3
+              .select("#legend")
+              .append("div")
+              .attr("class", "legend-item");
+            legendItem
+              .append("div")
+              .attr("class", "legend-color")
+              .style("background-color", item.color);
+            legendItem.append("span").text(item.name);
+          });
+
+          const filterType = d3.select("#filter-type");
+          legendItems.forEach((item) => {
+            filterType
+              .append("option")
+              .text(item.name)
+              .attr("value", item.name);
+          });
+
+          filterType.on("change", () => {
+            const selected = filterType.node().value;
+            rects.style("opacity", (d) =>
+              selected === "all" || d.data.name === selected ? 1 : 0.3
+            );
+          });
+
+          d3.select("#save-image").on("click", () => {
+            const svgElement = document.getElementById("treemap-svg");
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svgElement);
+            const blob = new Blob([svgString], {
+              type: "image/svg+xml;charset=utf-8",
             });
+            const url = URL.createObjectURL(blob);
 
-            const legendItems = [...new Set(hierarchy.leaves().map(d => d.data.name))]
-                .map(name => ({
-                    name: name,
-                    color: colorScale(name)
-                }))
-                .sort((a, b) => d3.ascending(a.color, b.color)); 
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "treemap_visualization.svg";
+            link.click();
 
-            legendItems.forEach((item) => {
-                const legendItem = d3.select("#legend").append("div").attr("class", "legend-item");
-                legendItem.append("div")
-                    .attr("class", "legend-color")
-                    .style("background-color", item.color);
-                legendItem.append("span").text(item.name);
-            });
-
-            const filterType = d3.select("#filter-type");
-            legendItems.forEach(item => {
-                filterType.append("option").text(item.name).attr("value", item.name);
-            });
-
-            filterType.on("change", () => {
-                const selected = filterType.node().value;
-                rects.style("opacity", d => (selected === "all" || d.data.name === selected) ? 1 : 0.3);
-            });
-
-            d3.select("#save-image").on("click", () => {
-                const svgElement = document.getElementById("treemap-svg");
-                const serializer = new XMLSerializer();
-                const svgString = serializer.serializeToString(svgElement);
-                const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-                const url = URL.createObjectURL(blob);
-
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "treemap_visualization.svg";
-                link.click();
-
-                URL.revokeObjectURL(url);
-            });
-        }).catch(error => console.error(error));
+            URL.revokeObjectURL(url);
+          });
+        })
+        .catch((error) => console.error(error));
     </script>
-</body>
+  </body>
 </html>

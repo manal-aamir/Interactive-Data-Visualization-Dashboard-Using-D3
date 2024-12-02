@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Sunburst Chart</title>
+    <title>Sunburst Chart</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        body {
+        body 
+        {
             background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
             color: #333;
             font-family: 'Poppins', sans-serif;
@@ -19,7 +20,8 @@
             overflow: hidden;
         }
 
-        .controls {
+        .controls 
+        {
             background-color: #4f4b8c;
             padding: 10px 20px;
             border-radius: 30px;
@@ -30,7 +32,8 @@
         }
 
         button,
-        select {
+        select 
+        {
             background-color: #6c63ff;
             color: white;
             border: none;
@@ -41,12 +44,14 @@
         }
 
         button:hover,
-        select:hover {
+        select:hover 
+        {
             background-color: #4e4dc8;
             transform: scale(1.05);
         }
 
-        .layout {
+        .layout 
+        {
             display: flex;
             gap: 20px;
             width: 95%;
@@ -55,7 +60,8 @@
             overflow: hidden;
         }
 
-        .legend-container {
+        .legend-container 
+        {
             width: 25%;
             height: 100%;
             background-color: #f9f9f9;
@@ -65,34 +71,39 @@
             overflow-y: auto;
         }
 
-        .legend {
+        .legend 
+        {
             font-size: 12px;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        .legend-item {
+        .legend-item 
+        {
             display: flex;
             align-items: center;
             gap: 10px;
             cursor: pointer;
         }
 
-        .legend-item:hover {
+        .legend-item:hover 
+        {
             transform: scale(1.05);
             transition: transform 0.2s ease, background-color 0.2s ease;
             background-color: #f0f0f0;
         }
 
-        .legend-color {
+        .legend-color 
+        {
             width: 15px;
             height: 15px;
             border: 1px solid #ccc;
             border-radius: 30px;
         }
 
-        .chart-container {
+        .chart-container 
+        {
             flex-grow: 1;
             height: 100%;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
@@ -103,13 +114,15 @@
             align-items: center;
         }
 
-        svg {
+        svg 
+        {
             border-radius: 30px;
             width: 100%;
             height: 100%;
         }
 
-        .tooltip {
+        .tooltip 
+        {
             font-family: 'Roboto', sans-serif;
             background: rgba(255, 255, 255, 0.9);
             border: 1px solid #ddd;
@@ -123,7 +136,9 @@
             pointer-events: none;
             transition: opacity 0.2s ease-in-out;
         }
-        .breadcrumb {
+
+        .breadcrumb 
+        {
         margin: 10px 0;
         padding: 10px 15px;
         font-size: 14px;
@@ -132,18 +147,21 @@
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .breadcrumb a {
+        .breadcrumb a 
+        {
             color: #6c63ff;
             text-decoration: none;
             font-weight: bold;
             transition: color 0.2s ease;
         }
 
-        .breadcrumb a:hover {
+        .breadcrumb a:hover 
+        {
             color: #4e4dc8;
         }
 
-        .breadcrumb span {
+        .breadcrumb span 
+        {
             color: #333;
             font-weight: bold;
         }
@@ -159,11 +177,12 @@
             <option value="all">All</option>
         </select>
     </div>
-    <!-- Breadcrumb Navigation -->
+
     <div class="breadcrumb">
         <a href="dashboard.html">Dashboard</a> &gt; 
         <span>Timeline</span>
    </div>
+
     <div class="layout">
         <div class="legend-container">
             <div class="legend" id="legend"></div>
@@ -173,6 +192,7 @@
             <div class="tooltip" id="tooltip"></div>
         </div>
     </div>
+
     <script>
         const width = 600; 
         const height = 600; 
@@ -189,25 +209,30 @@
         const legend = d3.select("#legend");
         let rootData;
 
-        function buildHierarchy(data) {
+        function buildHierarchy(data) 
+        {
             const root = { name: "Root", children: [] };
 
             data.forEach(d => {
-                if (d.infection_case && d.infection_case !== "Unknown") {
+                if (d.infection_case && d.infection_case !== "Unknown") 
+                {
                     let province = root.children.find(p => p.name === d.province);
-                    if (!province) {
+                    if (!province) 
+                    {
                         province = { name: d.province, children: [] };
                         root.children.push(province);
                     }
 
                     let city = province.children.find(c => c.name === d.city);
-                    if (!city) {
+                    if (!city) 
+                    {
                         city = { name: d.city, children: [] };
                         province.children.push(city);
                     }
 
                     let caseType = city.children.find(i => i.name === d.infection_case);
-                    if (!caseType) {
+                    if (!caseType) 
+                    {
                         caseType = { name: d.infection_case, value: 1 };
                         city.children.push(caseType);
                     }
@@ -230,9 +255,12 @@
 
             filterSelect.on("change", () => {
                 const selectedProvince = filterSelect.node().value;
-                if (selectedProvince === "all") {
+                if (selectedProvince === "all") 
+                {
                     drawSunburst(rootData);
-                } else {
+                } 
+                else 
+                {
                     const filteredRoot = rootData.copy();
                     filteredRoot.children = filteredRoot.children.filter(d => d.data.name === selectedProvince);
                     drawSunburst(filteredRoot);
@@ -240,7 +268,8 @@
             });
         });
 
-        function drawSunburst(hierarchy) {
+        function drawSunburst(hierarchy) 
+        {
             svg.selectAll("*").remove();
 
             const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, hierarchy.children.length + 1));
@@ -297,14 +326,21 @@
                 let targetNode;
 
                 if (!p.depth) {
-                    if (root.parent) {
+                    if (root.parent) 
+                    {
                         targetNode = root.parent;
-                    } else {
+                    } 
+                    else 
+                    {
                         return;
                     }
-                } else if (p.children) {
+                } 
+                else if (p.children) 
+                {
                     targetNode = p;
-                } else {
+                }
+                else 
+                {
                     targetNode = p.parent;
                 }
 
@@ -331,7 +367,8 @@
                     .attrTween("d", d => () => arc(d.current));
 
                 // Transition the labels
-                label.filter(function (d) {
+                label.filter(function (d) 
+                {
                     return +this.getAttribute("fill-opacity") || labelVisible(d.target);
                 }).transition(t)
                     .attr("fill-opacity", d => +labelVisible(d.target))
@@ -341,16 +378,19 @@
             }
 
 
-            function arcVisible(d) {
+            function arcVisible(d) 
+            {
                 return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
             }
 
-            function labelVisible(d) {
+            function labelVisible(d) 
+            {
                 return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
             }
 
 
-            function labelTransform(d) {
+            function labelTransform(d) 
+            {
                 const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
                 const y = (d.y0 + d.y1) / 2 * radius;
                 return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;

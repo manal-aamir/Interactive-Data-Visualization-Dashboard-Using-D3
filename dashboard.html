@@ -1,317 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
     <style>
-        /* Base styling */
-        body {
-            background: linear-gradient(135deg, #f0f8ff, #c8dfff);
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+      body 
+      {
+        background: linear-gradient(135deg, #f0f8ff, #c8dfff);
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
 
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, #4a69bd, #6a89cc);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
+      #loading-screen 
+      {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #4a69bd, #6a89cc);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+      }
 
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #c8dfff;
-            border-top: 6px solid #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+      .spinner 
+      {
+        width: 60px;
+        height: 60px;
+        border: 6px solid #c8dfff;
+        border-top: 6px solid #ffffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
 
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+      @keyframes spin 
+      {
+        from {
+          transform: rotate(0deg);
         }
-
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            display: none;
-            pointer-events: none;
-            z-index: 10;
+        to {
+          transform: rotate(360deg);
         }
+      }
 
-        #dashboard {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            overflow-y: auto;
-            height: 100vh;
-            color: #333;
-        }
+      .tooltip 
+      {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        display: none;
+        pointer-events: none;
+        z-index: 10;
+      }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 15px 30px;
-            background: linear-gradient(to right, #6a89cc, #4a69bd);
-            border-radius: 15px;
-            color: white;
-            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
+      #dashboard 
+      {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        overflow-y: auto;
+        height: 100vh;
+        color: #333;
+      }
 
-        .header h1 {
-            font-size: 42px;
-            margin: 0;
-            font-weight: bold;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-        }
+      .header 
+      {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 15px 30px;
+        background: linear-gradient(to right, #6a89cc, #4a69bd);
+        border-radius: 15px;
+        color: white;
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+        position: relative;
+      }
 
-        .header p {
-            font-size: 18px;
-            margin-top: 10px;
-        }
+      .header h1 
+      {
+        font-size: 42px;
+        margin: 0;
+        font-weight: bold;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+      }
 
-        .home-btn {
-            position: absolute;
-            top: 50%;
-            left: 20px;
-            transform: translateY(-50%);
-            background-color: #4a69bd;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-        }
+      .header p 
+      {
+        font-size: 18px;
+        margin-top: 10px;
+      }
 
+      .home-btn 
+      {
+        position: absolute;
+        top: 50%;
+        left: 20px;
+        transform: translateY(-50%);
+        background-color: #4a69bd;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .layout 
+      {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+        width: 90%;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      @media screen and (max-width: 768px) 
+      {
         .layout {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-gap: 20px;
-            width: 90%;
-            max-width: 1600px;
-            margin: 0 auto;
+          grid-template-columns: 1fr;
         }
+      }
 
-        @media screen and (max-width: 768px) {
-            .layout {
-                grid-template-columns: 1fr;
-            }
-        }
+      .card 
+      {
+        position: relative;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 400px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
 
-        .card {
-            position: relative;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 400px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+      .card:hover 
+      {
+        transform: translateY(-8px);
+        box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
+      }
 
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
-        }
+      .card .overlay 
+      {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        font-weight: bold;
+        text-transform: uppercase;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        cursor: pointer;
+        z-index: 2;
+      }
 
-        .card .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            font-weight: bold;
-            text-transform: uppercase;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-            cursor: pointer;
-            z-index: 2;
-        }
+      .card:hover .overlay 
+      {
+        opacity: 1;
+      }
 
-        .card:hover .overlay {
-            opacity: 1;
-        }
+      .card iframe 
+      {
+        width: 100%;
+        height: 100%;
+        border: none;
+        z-index: 1;
+      }
 
-        .card iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            z-index: 1;
-        }
+      .breadcrumb 
+      {
+        margin: 20px 0;
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+      }
 
-        .breadcrumb {
-            margin: 20px 0;
-            padding: 10px 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-        }
+      .legend 
+      {
+        margin: 20px 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
 
-        .legend {
-            margin: 20px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
+      .legend-item 
+      {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+      }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .legend-item span {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-        }
+      .legend-item span 
+      {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
+    <!-- Dashboard Loading -->
     <div id="loading-screen">
-        <div class="spinner"></div>
-        <p>Loading Dashboard...</p>
+      <div class="spinner"></div>
+      <p>Loading Dashboard...</p>
     </div>
 
     <div id="dashboard">
-        <div class="header">
-            <h2>Enhanced Data Visualization Dashboard</h2>
-            <p>Explore, interact, and analyze data with advanced features</p>
+      <div class="header">
+        <h2>Enhanced Data Visualization Dashboard</h2>
+        <p>Explore, interact, and analyze data with advanced features</p>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item" onclick="toggleCategory('all')">
+          <span style="background-color: #951ea8"></span> Home
         </div>
+        <div class="legend-item" onclick="toggleCategory('hierarchy')">
+          <span style="background-color: #49bab5"></span> Hierarchy
+        </div>
+        <div class="legend-item" onclick="toggleCategory('time')">
+          <span style="background-color: #204128"></span> Time
+        </div>
+        <div class="legend-item" onclick="toggleCategory('network')">
+          <span style="background-color: #ffa07a"></span> Network
+        </div>
+      </div>
 
-        <div class="legend">
-            <div class="legend-item" onclick="toggleCategory('all')">
-                <span style="background-color: #951ea8;"></span> Home
-            </div>
-            <div class="legend-item" onclick="toggleCategory('hierarchy')">
-                <span style="background-color: #49bab5;"></span> Hierarchy
-            </div>
-            <div class="legend-item" onclick="toggleCategory('time')">
-                <span style="background-color: #204128;"></span> Time
-            </div>
-            <div class="legend-item" onclick="toggleCategory('network')">
-                <span style="background-color: #ffa07a;"></span> Network
-            </div>
-        </div>   
+      <div id="breadcrumb" class="breadcrumb">Home > Dashboard</div>
+      <!-- Tooltip -->
+      <div id="tooltip" class="tooltip"></div>
 
-        <div id="breadcrumb" class="breadcrumb">Home > Dashboard</div>
-        <!-- Tooltip -->
-        <div id="tooltip" class="tooltip"></div>
-
-        <div class="layout">
-            <div class="card" data-insight="TreeMap: Shows hierarchical data" data-category="hierarchy">
-                <div class="overlay" onclick="navigateTo('TreeMap.html')">Click to View</div>
-                <iframe src="TreeMap.html"></iframe>
-            </div>
-            <div class="card" data-insight="Timeline: Displays trends over time" data-category="time">
-                <div class="overlay" onclick="navigateTo('Timeline.html')">Click to View</div>
-                <iframe src="Timeline.html"></iframe>
-            </div>
-            <div class="card" data-insight="Sunburst: Radial visualization of hierarchical data" data-category="hierarchy">
-                <div class="overlay" onclick="navigateTo('Sunburst.html')">Click to View</div>
-                <iframe src="Sunburst.html"></iframe>
-            </div>
-            <div class="card" data-insight="Force-Directed Graph: Visualizes network relationships" data-category="network">
-                <div class="overlay" onclick="navigateTo('Forced_directed.html')">Click to View</div>
-                <iframe src="Forced_directed.html"></iframe>
-            </div>
-        </div>     
+      <div class="layout">
+        <div
+          class="card"
+          data-insight="TreeMap: Shows hierarchical data"
+          data-category="hierarchy"
+        >
+          <div class="overlay" onclick="navigateTo('TreeMap.html')">
+            Click to View
+          </div>
+          <iframe src="TreeMap.html"></iframe>
+        </div>
+        <div
+          class="card"
+          data-insight="Timeline: Displays trends over time"
+          data-category="time"
+        >
+          <div class="overlay" onclick="navigateTo('Timeline.html')">
+            Click to View
+          </div>
+          <iframe src="Timeline.html"></iframe>
+        </div>
+        <div
+          class="card"
+          data-insight="Sunburst: Radial visualization of hierarchical data"
+          data-category="hierarchy"
+        >
+          <div class="overlay" onclick="navigateTo('Sunburst.html')">
+            Click to View
+          </div>
+          <iframe src="Sunburst.html"></iframe>
+        </div>
+        <div
+          class="card"
+          data-insight="Force-Directed Graph: Visualizes network relationships"
+          data-category="network"
+        >
+          <div class="overlay" onclick="navigateTo('Forced_directed.html')">
+            Click to View
+          </div>
+          <iframe src="Forced_directed.html"></iframe>
+        </div>
+      </div>
     </div>
 
     <script>
-        const tooltip = document.getElementById('tooltip');
+      const tooltip = document.getElementById("tooltip");
 
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mouseover', (e) => {
-                const insight = card.dataset.insight;
-                tooltip.innerHTML = insight;
-                tooltip.style.display = 'block';
-                tooltip.style.left = `${e.pageX + 10}px`;
-                tooltip.style.top = `${e.pageY + 10}px`;
-            });
-
-            card.addEventListener('mousemove', (e) => {
-                tooltip.style.left = `${e.pageX + 10}px`;
-                tooltip.style.top = `${e.pageY + 10}px`;
-            });
-
-            card.addEventListener('mouseout', () => {
-                tooltip.style.display = 'none';
-            });
+      document.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("mouseover", (e) => {
+          const insight = card.dataset.insight;
+          tooltip.innerHTML = insight;
+          tooltip.style.display = "block";
+          tooltip.style.left = `${e.pageX + 10}px`;
+          tooltip.style.top = `${e.pageY + 10}px`;
         });
 
-        function navigateTo(url) {
-            window.location.href = url;
-        }
-
-        function toggleCategory(category) {
-        document.querySelectorAll('.card').forEach(card => {
-            if (category === 'all' || card.dataset.category === category) 
-            {
-                card.style.display = 'block';
-            } 
-            else 
-            {
-                card.style.display = 'none';
-            }
+        card.addEventListener("mousemove", (e) => {
+          tooltip.style.left = `${e.pageX + 10}px`;
+          tooltip.style.top = `${e.pageY + 10}px`;
         });
-    }
 
-
-        function goToHome() {
-            alert("Home button clicked! Implement your navigation logic here.");
-        }
-
-        window.addEventListener('load', () => {
-            const loadingScreen = document.getElementById('loading-screen');
-            const dashboard = document.getElementById('dashboard');
-
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-                dashboard.style.display = 'flex';
-            }, 2000);
+        card.addEventListener("mouseout", () => {
+          tooltip.style.display = "none";
         });
+      });
+
+      function navigateTo(url) 
+      {
+        window.location.href = url;
+      }
+
+      function toggleCategory(category) {
+        document.querySelectorAll(".card").forEach((card) => {
+          if (category === "all" || card.dataset.category === category) 
+          {
+            card.style.display = "block";
+          } 
+          else 
+          {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      function goToHome() 
+      {
+        alert("Home button clicked! Implement your navigation logic here.");
+      }
+
+      window.addEventListener("load", () => {
+        const loadingScreen = document.getElementById("loading-screen");
+        const dashboard = document.getElementById("dashboard");
+
+        setTimeout(() => {
+          loadingScreen.style.display = "none";
+          dashboard.style.display = "flex";
+        }, 2000);
+      });
     </script>
-</body>
-
+  </body>
 </html>
