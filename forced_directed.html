@@ -102,6 +102,26 @@
             gap: 10px;
         }
 
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .legend-item:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            background-color: #f0f0f0;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border: 1px solid #ccc;
+            border-radius: 30px;
+        }
+
         .graph-container {
             flex-grow: 1;
             height: 100%;
@@ -165,7 +185,7 @@
         <button class="back-button" onclick="goBack()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z" />
-            </svg>
+            </svg> 
         </button>
         <select id="filter">
             <option value="all">All Provinces</option>
@@ -190,12 +210,11 @@
         </div>
     </div>
 
-
-
     <script>
         function goBack() {
             window.location.href = 'dashboard.html'; 
         }
+
         const width = 1000;
         const height = 700;
 

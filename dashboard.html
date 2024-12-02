@@ -219,8 +219,22 @@
             <p>Explore, interact, and analyze data with advanced features</p>
         </div>
 
-        <div id="breadcrumb" class="breadcrumb">Home > Dashboard</div>
+        <div class="legend">
+            <div class="legend-item" onclick="toggleCategory('all')">
+                <span style="background-color: #951ea8;"></span> Home
+            </div>
+            <div class="legend-item" onclick="toggleCategory('hierarchy')">
+                <span style="background-color: #49bab5;"></span> Hierarchy
+            </div>
+            <div class="legend-item" onclick="toggleCategory('time')">
+                <span style="background-color: #204128;"></span> Time
+            </div>
+            <div class="legend-item" onclick="toggleCategory('network')">
+                <span style="background-color: #ffa07a;"></span> Network
+            </div>
+        </div>   
 
+        <div id="breadcrumb" class="breadcrumb">Home > Dashboard</div>
         <!-- Tooltip -->
         <div id="tooltip" class="tooltip"></div>
 
@@ -241,22 +255,7 @@
                 <div class="overlay" onclick="navigateTo('Forced_directed.html')">Click to View</div>
                 <iframe src="Forced_directed.html"></iframe>
             </div>
-        </div>
-
-        <div class="legend">
-            <div class="legend-item" onclick="toggleCategory('all')">
-                <span style="background-color: #951ea8;"></span> Home
-            </div>
-            <div class="legend-item" onclick="toggleCategory('hierarchy')">
-                <span style="background-color: #49bab5;"></span> Hierarchy
-            </div>
-            <div class="legend-item" onclick="toggleCategory('time')">
-                <span style="background-color: #204128;"></span> Time
-            </div>
-            <div class="legend-item" onclick="toggleCategory('network')">
-                <span style="background-color: #ffa07a;"></span> Network
-            </div>
-        </div>        
+        </div>     
     </div>
 
     <script>
